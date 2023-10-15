@@ -1,1 +1,2 @@
-# cm3070
+# CM3070 - Final Project
+## Junk Art
