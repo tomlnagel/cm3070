@@ -3,7 +3,13 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Base
+  - Floor
+  - Stacked
+  - Unstacked
+  - Held
+  - Grounded
   layers:
   - Default
   - TransparentFX

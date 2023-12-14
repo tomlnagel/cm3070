@@ -19,11 +19,23 @@ public class GrabObject : MonoBehaviour
     [SerializeField] private float grabRange = 10f; //max range to grab object
     [SerializeField] private float grabForce = 2f; //force to pull object to grab focus
     [SerializeField] private float scrollSpeed = 0.5f; //speed to move while srolling
-    [SerializeField] private float maxScroll = 3f;
-    [SerializeField] private float scrollDistance = 0f;
-
+    [SerializeField] private float maxScroll = 3f; //maximum Z offset from grab point
+    
+    private float scrollDistance = 0f; //current Z offset from grab point
     private GameObject heldObject; //currently held object
     private Rigidbody heldObjectRB; //RB of grabbed object
+    private bool rotating = false; //is the held object being rotated
+
+    [Header("Object tags")]
+    [SerializeField] private string heldTag = "Held"; //tag to set the held piece
+    [SerializeField] private string unheldTag = "Unstacked"; //tag to set the dropped piece
+
+    //events
+    public delegate void StartRotating();
+    public static event StartRotating onRotateStart;
+
+    public delegate void StopRotating();
+    public static event StopRotating onRotateStop;
 
     //once per frame
     void Update()
@@ -48,13 +60,23 @@ public class GrabObject : MonoBehaviour
 
         if (heldObject)
         {
-            //restrict max scrolling
-            scrollDistance = Mathf.Clamp(scrollDistance + Input.mouseScrollDelta.y * scrollSpeed, -maxScroll, maxScroll);
+            //rotating mode
+            if (Input.GetKey(KeyCode.Space))
+            {
+                onRotateStart?.Invoke();
+                rotating = true;
+            }
+            else
+            {
+                onRotateStop?.Invoke();
+                rotating = false;
 
-            //move hold position when scrolling
-            holdFocus.position = grabFocus.position + (holdFocus.TransformDirection(Vector3.forward) * scrollDistance);
-            
-        }                
+                //restrict max scrolling
+                scrollDistance = Mathf.Clamp(scrollDistance + Input.mouseScrollDelta.y * scrollSpeed, -maxScroll, maxScroll);
+                //move hold position when scrolling
+                holdFocus.position = grabFocus.position + (holdFocus.TransformDirection(Vector3.forward) * scrollDistance);
+            }            
+        }
     }
 
     //once per physics timestamp
@@ -63,9 +85,13 @@ public class GrabObject : MonoBehaviour
         if (heldObject)
         {
             moveObject();
+
+            if (rotating)
+            {
+                rotateObject();
+            }
         }
     }
-
 
     private void grabObject(GameObject target)
     {
@@ -82,7 +108,10 @@ public class GrabObject : MonoBehaviour
             heldObjectRB.constraints = RigidbodyConstraints.FreezeRotation;
 
             //parent held object to grab area
-            heldObjectRB.transform.parent = holdFocus;           
+            heldObjectRB.transform.parent = holdFocus;
+
+            //set the object's tag
+            heldObject.tag = heldTag;
         }    
     }
 
@@ -92,6 +121,9 @@ public class GrabObject : MonoBehaviour
         heldObjectRB.useGravity = true;
         heldObjectRB.drag = 1;
         heldObjectRB.constraints = RigidbodyConstraints.None;
+
+        //reset tag
+        heldObject.tag = unheldTag;
 
         //unparent object
         heldObjectRB.transform.parent = null;
@@ -103,6 +135,8 @@ public class GrabObject : MonoBehaviour
         //reset hold focus to grab point
         holdFocus.position = grabFocus.position;
         scrollDistance = 0f;
+
+        
     }
 
     private void moveObject()
@@ -118,7 +152,13 @@ public class GrabObject : MonoBehaviour
         }
     }
 
-    
+    private void rotateObject()
+    {
+        //get mouse movement
+        Vector3 mouseMovement = new Vector3(Input.GetAxis("Mouse Y") * -1, Input.GetAxis("Mouse X") * -1, Input.mouseScrollDelta.y * 5);
+
+        heldObjectRB.transform.eulerAngles += mouseMovement;
+    }
 
 
 }
