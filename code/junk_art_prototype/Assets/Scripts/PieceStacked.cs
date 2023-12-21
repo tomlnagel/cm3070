@@ -57,7 +57,10 @@ public class PieceStacked : MonoBehaviour
         }
 
         //flag as stacked if not grounded, and connected to base or existing stack
-        if ((otherTag == baseTag || otherTag == stackedTag) && transform.gameObject.tag != groundedTag)
+        if (
+            (otherTag == baseTag || otherTag == stackedTag) 
+            && transform.gameObject.tag != groundedTag
+            )
         {
             transform.gameObject.tag = stackedTag;
             thisRenderer.material = stackedMat;

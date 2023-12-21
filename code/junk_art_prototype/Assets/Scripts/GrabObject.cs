@@ -43,7 +43,7 @@ public class GrabObject : MonoBehaviour
         //LMB pressed
         if (Input.GetMouseButtonDown(0))
         {
-            //check if already grabing
+            //check if already grabbing
             if (heldObject)
             {
                 dropObject();
@@ -134,16 +134,13 @@ public class GrabObject : MonoBehaviour
 
         //reset hold focus to grab point
         holdFocus.position = grabFocus.position;
-        scrollDistance = 0f;
-
-        
+        scrollDistance = 0f;        
     }
 
     private void moveObject()
     {
         if (Vector3.Distance(heldObject.transform.position, holdFocus.position) > 0.1f)
         {
-
             //vector from object to hold point
             Vector3 moveDirection = holdFocus.position - heldObject.transform.position;
 
@@ -155,10 +152,13 @@ public class GrabObject : MonoBehaviour
     private void rotateObject()
     {
         //get mouse movement
-        Vector3 mouseMovement = new Vector3(Input.GetAxis("Mouse Y") * -1, Input.GetAxis("Mouse X") * -1, Input.mouseScrollDelta.y * 5);
+        Vector3 mouseMovement = new Vector3(
+            Input.GetAxis("Mouse Y") * -1, 
+            Input.GetAxis("Mouse X") * -1, 
+            Input.mouseScrollDelta.y * 5
+            );
 
         heldObjectRB.transform.eulerAngles += mouseMovement;
     }
-
 
 }

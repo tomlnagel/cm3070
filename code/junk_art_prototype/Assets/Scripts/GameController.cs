@@ -10,33 +10,29 @@ public class GameController : MonoBehaviour
     private void OnEnable()
     {
         //event subscriptions
-        PieceStacked.onStackChanged += CalcMaxHeight;
+        PieceStacked.onStackChanged += calcMaxHeight;
     }
 
     private void OnDisable()
     {
         //event subscriptions
-        PieceStacked.onStackChanged -= CalcMaxHeight;
+        PieceStacked.onStackChanged -= calcMaxHeight;
     }
 
-    private void CalcMaxHeight()
+    private void calcMaxHeight()
     {
         float maxHeight = 0f;
 
         GameObject[] stackedList = GameObject.FindGameObjectsWithTag(stackedTag);
-
-        Debug.Log("Checking " + stackedList.Length + " pieces");
 
         //loop through each object in the stack
         foreach(GameObject piece in stackedList)
         {
             //update max height with top of bounding box
             maxHeight = Mathf.Max(maxHeight, piece.GetComponent<Collider>().bounds.max.y);
-
         }
 
         Debug.Log("Stack height: " + maxHeight.ToString("0.0"));
-
     }
 
 }
