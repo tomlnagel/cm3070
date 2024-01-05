@@ -6,10 +6,7 @@ TagManager:
   tags:
   - Base
   - Floor
-  - Stacked
-  - Unstacked
-  - Held
-  - Grounded
+  - GamePiece
   layers:
   - Default
   - TransparentFX

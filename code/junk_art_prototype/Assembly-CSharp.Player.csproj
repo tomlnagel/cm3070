@@ -643,10 +643,41 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\EasyColliderEditor\DOTS\Scripts\EasyColliderDOTS.cs" />
+    <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderAutoSkinned.cs" />
+    <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderAutoSkinnedBone.cs" />
+    <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderCreator.cs" />
+    <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderData.cs" />
+    <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderDraw.cs" />
+    <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderEditor.cs" />
+    <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderEnums.cs" />
+    <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderGizmos.cs" />
+    <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderPreferences.cs" />
+    <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderPreviewer.cs" />
+    <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderProperties.cs" />
+    <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderQuickHull.cs" />
+    <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderRotateDuplicate.cs" />
+    <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderSaving.cs" />
+    <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderTips.cs" />
+    <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderUIHelpers.cs" />
+    <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderVHACD.cs" />
+    <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderVertex.cs" />
+    <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderWindow.cs" />
+    <Compile Include="Assets\EasyColliderEditor\Scripts\Shader\EasyColliderCompute.cs" />
+    <Compile Include="Assets\EasyColliderEditor\Scripts\VHACDParameters.cs" />
+    <Compile Include="Assets\EasyColliderEditor\Scripts\VHACDScriptableSettings.cs" />
     <Compile Include="Assets\Scripts\CameraController.cs" />
     <Compile Include="Assets\Scripts\GameController.cs" />
     <Compile Include="Assets\Scripts\GrabObject.cs" />
+    <Compile Include="Assets\Scripts\ObjectTags.cs" />
     <Compile Include="Assets\Scripts\PieceStacked.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\EasyColliderEditor\Scripts\Plugins\ECE_VHACD.dll" />
+    <None Include="Assets\EasyColliderEditor\Scripts\Plugins\VHACDLicense.txt" />
+    <None Include="Assets\EasyColliderEditor\Scripts\Shader\EasyColliderMeshColliderPreview.shader" />
+    <None Include="Assets\EasyColliderEditor\Scripts\Shader\EasyColliderShader.shader" />
+    <None Include="Assets\EasyColliderEditor\ThirdPartyNotices.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

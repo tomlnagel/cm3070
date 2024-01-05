@@ -12,7 +12,7 @@ public class GrabObject : MonoBehaviour
 {
 
     [Header("Grab settings")]
-    [SerializeField] private LayerMask grabLayer; //layer available for grabbing
+    [SerializeField] private string grabTag = "GamePiece"; //tag of grabable object
     [SerializeField] private Camera playerCamera; //current player's camera
     [SerializeField] private Transform grabFocus; //grab focus point
     [SerializeField] private Transform holdFocus; //hold focus point
@@ -25,10 +25,6 @@ public class GrabObject : MonoBehaviour
     private GameObject heldObject; //currently held object
     private Rigidbody heldObjectRB; //RB of grabbed object
     private bool rotating = false; //is the held object being rotated
-
-    [Header("Object tags")]
-    [SerializeField] private string heldTag = "Held"; //tag to set the held piece
-    [SerializeField] private string unheldTag = "Unstacked"; //tag to set the dropped piece
 
     //events
     public delegate void StartRotating();
@@ -52,9 +48,12 @@ public class GrabObject : MonoBehaviour
 
             //cast ray through mouse location
             Ray MouseRay = playerCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(MouseRay, out RaycastHit HitInfo, grabRange, grabLayer))
+            if (Physics.Raycast(MouseRay, out RaycastHit HitInfo, grabRange))
             {
-                grabObject(HitInfo.transform.gameObject);
+                if (HitInfo.transform.gameObject.tag == grabTag)
+                {
+                    grabObject(HitInfo.transform.gameObject);
+                }                
             }
         }
 
@@ -110,20 +109,20 @@ public class GrabObject : MonoBehaviour
             //parent held object to grab area
             heldObjectRB.transform.parent = holdFocus;
 
-            //set the object's tag
-            heldObject.tag = heldTag;
+            //set the object's status
+            heldObject.GetComponent<ObjectTags>().held = true;
         }    
     }
 
     private void dropObject()
-    {
+    {        
         //set physics parameters
         heldObjectRB.useGravity = true;
         heldObjectRB.drag = 1;
         heldObjectRB.constraints = RigidbodyConstraints.None;
 
-        //reset tag
-        heldObject.tag = unheldTag;
+        //reset status
+        heldObject.GetComponent<ObjectTags>().held = false;
 
         //unparent object
         heldObjectRB.transform.parent = null;

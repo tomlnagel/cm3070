@@ -5,8 +5,6 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
 
-    [SerializeField] private string stackedTag = "Stacked"; //tag of stacked objects
-
     private void OnEnable()
     {
         //event subscriptions
@@ -23,13 +21,16 @@ public class GameController : MonoBehaviour
     {
         float maxHeight = 0f;
 
-        GameObject[] stackedList = GameObject.FindGameObjectsWithTag(stackedTag);
+        GameObject[] pieceList = GameObject.FindGameObjectsWithTag("GamePiece");
 
         //loop through each object in the stack
-        foreach(GameObject piece in stackedList)
+        foreach(GameObject piece in pieceList)
         {
             //update max height with top of bounding box
-            maxHeight = Mathf.Max(maxHeight, piece.GetComponent<Collider>().bounds.max.y);
+            if (piece.GetComponent<ObjectTags>().stacked)
+            {
+                maxHeight = Mathf.Max(maxHeight, piece.GetComponent<Collider>().bounds.max.y); //this needs adjusting to allow for multiple colliders
+            }
         }
 
         Debug.Log("Stack height: " + maxHeight.ToString("0.0"));
