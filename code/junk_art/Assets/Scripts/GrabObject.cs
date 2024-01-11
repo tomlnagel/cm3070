@@ -8,9 +8,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Properties and methods to manage picking up and droppin game pieces
+/// </summary>
 public class GrabObject : MonoBehaviour
 {
-
     [Header("Grab settings")]
     [SerializeField] private string grabTag = "GamePiece"; //tag of grabable object
     [SerializeField] private Camera playerCamera; //current player's camera
@@ -42,7 +44,7 @@ public class GrabObject : MonoBehaviour
             //check if already grabbing
             if (heldObject)
             {
-                dropObject();
+                DropObject();
                 return;
             }
 
@@ -52,7 +54,7 @@ public class GrabObject : MonoBehaviour
             {
                 if (HitInfo.transform.gameObject.tag == grabTag)
                 {
-                    grabObject(HitInfo.transform.gameObject);
+                    GrabTarget(HitInfo.transform.gameObject);
                 }                
             }
         }
@@ -83,16 +85,22 @@ public class GrabObject : MonoBehaviour
     {
         if (heldObject)
         {
-            moveObject();
+            MoveObject();
 
             if (rotating)
             {
-                rotateObject();
+                RotateObject();
             }
         }
     }
 
-    private void grabObject(GameObject target)
+    /// <summary>
+    /// Pick up target object by parenting it to a descendant of the main camera
+    /// Disable target's gravity interaction
+    /// Set the object's state as 'held'
+    /// </summary>
+    /// <param name="target">The object to pick up</param>
+    private void GrabTarget(GameObject target)
     {
         //check target has an RB
         if (target.GetComponent<Rigidbody>())
@@ -114,7 +122,12 @@ public class GrabObject : MonoBehaviour
         }    
     }
 
-    private void dropObject()
+    /// <summary>
+    /// Drop the currently held object by removing it from the camera's descendents
+    /// Reset object's physics parameters
+    /// Set object's status to not 'held'
+    /// </summary>
+    private void DropObject()
     {        
         //set physics parameters
         heldObjectRB.useGravity = true;
@@ -136,7 +149,10 @@ public class GrabObject : MonoBehaviour
         scrollDistance = 0f;        
     }
 
-    private void moveObject()
+    /// <summary>
+    /// Move held object towards main camera descendent
+    /// </summary>
+    private void MoveObject()
     {
         if (Vector3.Distance(heldObject.transform.position, holdFocus.position) > 0.1f)
         {
@@ -148,7 +164,10 @@ public class GrabObject : MonoBehaviour
         }
     }
 
-    private void rotateObject()
+    /// <summary>
+    /// Rotate held object on 3 axes according to mouse movement and scrolling
+    /// </summary>
+    private void RotateObject()
     {
         //get mouse movement
         Vector3 mouseMovement = new Vector3(

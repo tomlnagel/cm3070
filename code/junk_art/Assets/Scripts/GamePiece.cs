@@ -3,20 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/**
- * Properties, satuses and methods for game pieces
-*/
+/// <summary>
+/// Properties, statuses, and methods for a game piece
+/// </summary>
 public class GamePiece : MonoBehaviour
 {
-    [Header("Statuses")]
-    [SerializeField] public bool stacked;
-    [SerializeField] public bool grounded;
-    [SerializeField] public bool held;
+    //statuses
+    [SerializeField] private bool held;
+    [SerializeField] private int stackOwner;
 
     //Materials
     private Material baseMat; //default material for this piece
-    //private Material stackedMat; //material for a stacked piece
-    //private Material groundedMat; //material for a fallen peice
     private Material heldMat; //material for a held peice
     private MeshRenderer thisRenderer; //the object's renderer
 
@@ -30,15 +27,12 @@ public class GamePiece : MonoBehaviour
     //initialise piece
     void Start()
     {
-        baseMat = Resources.Load<Material>("Materials/New_Piece_Mat");
-        //stackedMat = Resources.Load<Material>("Materials/Stacked_Piece_Mat");
-        //groundedMat = Resources.Load<Material>("Materials/Grounded_Piece_Mat");
         heldMat = Resources.Load<Material>("Materials/Held_Piece_Mat");
 
-        stacked = false;
-        grounded = false;
         held = false;
         thisRenderer = GetComponent<MeshRenderer>(); //get the renderer for this object
+
+        thisRenderer.material = baseMat;
 
         destroy = false;
         detroyLen = 2.6f;
@@ -46,7 +40,6 @@ public class GamePiece : MonoBehaviour
         destroyTimer = 0f;
         flashTimer = 0f;
     }
-
 
     void Update()
     {
@@ -56,6 +49,29 @@ public class GamePiece : MonoBehaviour
         }
     }
 
+    public bool Held
+    { 
+        get { return held; } 
+        set { held = value; } 
+    } 
+
+    public int StackOwner
+    {
+        get { return stackOwner; }
+        //no need for setter
+    }
+
+    public Material BaseMat
+    {
+        set { baseMat = value; }
+        //no need for getter
+    }
+
+    /// <summary>
+    /// Called once per update loop
+    /// Flash this object while awating destruction by dis/enabling renderer
+    /// At end of destruction time destroy this object
+    /// </summary>
     private void FlashAndDestroy()
     {
         destroyTimer += Time.deltaTime;
@@ -73,28 +89,20 @@ public class GamePiece : MonoBehaviour
         }        
     }
 
-    //get piece statuses
-    public string PrintStatuses()
-    {
-        string ret = "statuses for ";
-        ret += gameObject.name;
-        ret += "; stacked: ";
-        ret += stacked;
-        ret += " grounded: ";
-        ret += grounded;
-        ret += " held: ";
-        ret += held;
-        return ret;
-    }
-
-    //set piece status to 'held'
+    /// <summary>
+    /// Set this object to 'held'
+    /// Update material to indicate status
+    /// </summary>
     public void Pickup()
     {
         held = true;
         thisRenderer.material = heldMat;
     }
 
-    //unset held status
+    /// <summary>
+    /// Set this object to not 'held'
+    /// Update material to indicate status
+    /// </summary>
     public void Drop()
     {
         held = false;
@@ -110,7 +118,7 @@ public class GamePiece : MonoBehaviour
         }
 
         string otherTag = collision.gameObject.tag;
-        GamePiece otherPiece = collision.gameObject.GetComponent<GamePiece>();
+        //GamePiece otherPiece = collision.gameObject.GetComponent<GamePiece>();
 
         //collision with 'ground'
         if (otherTag == "Ground")
@@ -122,35 +130,36 @@ public class GamePiece : MonoBehaviour
         //collsion with 'base'
         if (otherTag == "Base")
         {
-            AddToStack();
+            int owner = collision.gameObject.GetComponent<PlayerBase>().OwnerIndex;
+            AddToStack(owner);
             return;
         }
 
-        //colided with something other than a game peice
-        if (!otherPiece)
+        if (otherTag == "GamePiece")
         {
+            int owner = collision.gameObject.GetComponent<GamePiece>().StackOwner;
+            AddToStack(owner);
             return;
         }
 
-        if (otherPiece.stacked && !otherPiece.grounded)
-        {
-            AddToStack();
-            return;
-        }
     }
 
-    private void AddToStack()
+    /// <summary>
+    /// Set this object to be part of a player's stack
+    /// </summary>
+    /// <param name="owner">The player's index</param>
+    private void AddToStack(int owner)
     {
         //flag this piece as stacked
-        stacked = true;
-        //thisRenderer.material = stackedMat;
+        stackOwner = owner;
     }
 
+    /// <summary>
+    /// Set this object to be destroyed
+    /// </summary>
     private void GroundPiece()
     {
-        //flag this piece as grounded
-        grounded = true;
-        //thisRenderer.material = groundedMat;
+        //set this piece for destruction
         destroy = true;
     }
 }

@@ -1,7 +1,14 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Properties and methods for moving the main camera around the game world
+/// Adapted from example in Unity 2019.4 template: 3D Sample Scene (URP)
+/// </summary>
 public class CameraController : MonoBehaviour
 {
+    /// <summary>
+    /// The target position and rotation for the camera to move towards
+    /// </summary>
     class TargetState
     {
         //target rotation
@@ -13,7 +20,10 @@ public class CameraController : MonoBehaviour
         public float y;
         public float z;
 
-        //intialise target state from actual values
+       /// <summary>
+       /// Set the target state to match a given transform
+       /// </summary>
+       /// <param name="t">The transform to copy</param>
         public void SetFromTransform(Transform t)
         {
             pitch = t.eulerAngles.x;
@@ -24,29 +34,40 @@ public class CameraController : MonoBehaviour
             z = t.position.z;
         }
 
-        //rotate and translate the target state
+        /// <summary>
+        /// Translate the target state position according to given vector
+        /// </summary>
+        /// <param name="translation">The vector to apply</param>
         public void Translate(Vector3 translation)
         {
+            //rotate input translation by current rotation
             Vector3 rotatedTranslation = Quaternion.Euler(pitch, yaw, roll) * translation;
 
+            //apply result to target state
             x += rotatedTranslation.x;
             y += rotatedTranslation.y;
             z += rotatedTranslation.z;
         }
     }
 
+    /// <summary>
+    /// Update camera's position towards target position and rotation
+    /// </summary>
     class CameraUpdater
     {
-        //target rotation
+        //camera rotation
         private float yaw;
         private float pitch;
         private float roll;
-        //target position
+        //camera position
         private float x;
         private float y;
         private float z;
 
-        //intialise target state from actual values
+        /// <summary>
+        /// Set the camera state to match a given transform
+        /// </summary>
+        /// <param name="t">The transform to copy</param>
         public void SetFromTransform(Transform t)
         {
             pitch = t.eulerAngles.x;
@@ -57,6 +78,12 @@ public class CameraController : MonoBehaviour
             z = t.position.z;
         }
 
+        /// <summary>
+        /// Update camera state to a percentage towards a target state
+        /// </summary>
+        /// <param name="target">The state to approach</param>
+        /// <param name="positionLerpPct">How far to approach target position</param>
+        /// <param name="rotationLerpPct">How far to approach target rotation</param>
         public void LerpTowards(TargetState target, float positionLerpPct, float rotationLerpPct)
         {
             yaw = Mathf.Lerp(yaw, target.yaw, rotationLerpPct);
@@ -68,6 +95,10 @@ public class CameraController : MonoBehaviour
             z = Mathf.Lerp(z, target.z, positionLerpPct);
         }
 
+        /// <summary>
+        /// Apply the calcualted  position to a given transform
+        /// </summary>
+        /// <param name="camera">The camera transform to move</param>
         public void UpdateTransform(Transform camera)
         {
             camera.eulerAngles = new Vector3(pitch, yaw, roll);
@@ -115,16 +146,26 @@ public class CameraController : MonoBehaviour
         GrabObject.onRotateStop -= EnableCameraControls;
     }
 
+    /// <summary>
+    /// Disable camera from interpreting control inputs
+    /// </summary>
     public void DisableCameraControls()
     {
         controlsEnabled = false;
     }
 
+    /// <summary>
+    /// Enable camera to interpret control inputs
+    /// </summary>
     public void EnableCameraControls()
     {
         controlsEnabled = true;
     }
 
+    /// <summary>
+    /// Turn WASD inputs into camera movement direction
+    /// </summary>
+    /// <returns>A vector to move the camera</returns>
     Vector3 GetInputTranslationDirection()
     {
         Vector3 direction = new Vector3();
