@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 4476943381974171494}
   - component: {fileID: 8227897882857393054}
   - component: {fileID: 7408042065269627095}
+  - component: {fileID: 981867376997049063}
   m_Layer: 0
   m_Name: stand
   m_TagString: GamePiece
@@ -198,3 +199,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   held: 0
   stackOwner: 0
+--- !u!65 &981867376997049063
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2675613412707573427}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.0000002, y: 2.0000002, z: 6}
+  m_Center: {x: 0, y: 0, z: 2}

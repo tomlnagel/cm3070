@@ -13,40 +13,44 @@ public class GameController : MonoBehaviour
     private int activePlayer;
 
     private int playerCount; //number of players
-    private float radius; //radius of the game space
+    private float radius = 13f; //radius of the game space
     private Player[] playerArray; //declare the player array
     private GamePieceDeck deck; //deck of game pieces
+    private int startingLives; //number of lives each player starts with
 
     //temprorary arrays until menu system built
-    string[] tempNames = {"Tom", "Lucy", "Tim" };
-    Color[] tempCols = { new Color(0.8f, 0.4f, 0.1f, 1), new Color(0.3f, 0.1f, 0.7f, 1), new Color(0.5f, 0.1f, 0.1f, 1) };
+    string[] tempNames = {"Tom", "Lucy", "Tim" , "Polly"};
+    Color[] tempCols = { new Color(0.8f, 0.4f, 0.1f, 1), new Color(0.3f, 0.1f, 0.7f, 1), new Color(0.5f, 0.1f, 0.1f, 1), new Color(0.1f, 0.6f, 0.1f) };
 
     private void OnEnable()
     {
         //event subscriptions
-        //PieceStacked.onStackChanged += calcMaxHeight;
+        GamePiece.onDestruction += LifeLost;
+        Player.onLivesOut += GameEnd;
+
     }
 
     private void OnDisable()
     {
         //event subscriptions
-        //PieceStacked.onStackChanged -= calcMaxHeight;
+        GamePiece.onDestruction -= LifeLost;
+        Player.onLivesOut -= GameEnd;
     }
 
     void Start()
     {
-        playerCount = 3;
-        radius = 13f;
+        //value will be set through a menu
+        playerCount = 4;        
+        startingLives = 3;
 
         deck = ScriptableObject.CreateInstance<GamePieceDeck>(); //instantiate a deck of pieces
-        deck.InitDeck(); //populate and shuffle the deck
+        deck.InitDeck(playerCount); //populate and shuffle the deck
 
         CreatePlayers();
         
         //start the game
         activePlayer = -1;
-        NextPlayer();
-        
+        NextPlayer();        
     }
 
     /// <summary>
@@ -64,6 +68,8 @@ public class GameController : MonoBehaviour
             newPlayer.PlayerNum = i; //set the pleyer number
             newPlayer.PlayerHome = PlayerHomePos(playerCount, i); //set base position
             newPlayer.PlayerRotation = PlayerHomeRotation(playerCount, i); //set base rotation
+            newPlayer.CardPosition = PlayerCardPosition(playerCount, i, -130f); //set the scorecard position
+            newPlayer.Lives = startingLives; //set nuber of lives
 
             //access temprorary arrays
             try
@@ -83,6 +89,8 @@ public class GameController : MonoBehaviour
             }
 
             newPlayer.CreateBase(); //create stack base GameObject
+            newPlayer.CreateCard(); //create scorecard
+
             playerArray[i] = newPlayer; //insert into array
         }
     }
@@ -119,12 +127,44 @@ public class GameController : MonoBehaviour
     }
 
     /// <summary>
+    /// Calculate player scorecard position by dividing the screen width evenly
+    /// </summary>
+    /// <param name="pCount">Total number of player in this game</param>
+    /// <param name="pNum">This player's number</param>
+    /// <param name="y">TThe y position of the card</param>
+    /// <returns>The rotationof the player base</returns>
+    private Vector2 PlayerCardPosition(int pCount, int pNum, float y)
+    {
+        //canvas width
+        float canvW = GameObject.Find("Canvas").GetComponent<RectTransform>().rect.width;
+
+        //card width
+        float cardW = 300f;
+
+        //zone size
+        float size = (canvW / pCount);
+
+        //zone start
+        float start = (size * pNum) - (canvW / 2);
+
+        //padding
+        float padding = (size - cardW) / 2;
+
+        float x = start + padding + (cardW/2);
+
+        return new Vector2(x, y);
+    }
+
+    /// <summary>
     /// Switch active player to the next in sequence
     /// </summary>
     public void NextPlayer()
     {
+        StackHeights(); //recalculate stack heights
+        if (activePlayer >= 0) playerArray[activePlayer].SetInactive(); //update UI for old player, if relevant
         activePlayer = (activePlayer + 1) % playerCount; //advance player
         AlignCameraForPlayer(activePlayer); //realign camera
+        playerArray[activePlayer].SetActive(); //update UI for new player
         SpawnGamePiece(); //give the new player a piece to add
     }
 
@@ -151,38 +191,110 @@ public class GameController : MonoBehaviour
     /// </summary>
     public void SpawnGamePiece()
     {
-        if (deck.PiecesLeft < 1)
+        if (deck.PiecesLeft <= 0)
         {
-            //must figure out what to do if we run out of pieces
+            GameEnd();
             return;
         }
 
         string[] newPieceDef = deck.NextPiece();
+
+        //spawn a new piece at the hold point
+        GameObject holdPoint = GameObject.Find("Hold Point");
+        GameObject newPiece = Instantiate(Resources.Load("Prefabs/" + newPieceDef[0]), holdPoint.transform.position, UnityEngine.Random.rotation) as GameObject;
         
-        //create the new peice at given position and rotation
-        GameObject newPiece = Instantiate(Resources.Load("Prefabs/" + newPieceDef[0]), new Vector3(0, 7, 0), Quaternion.identity) as GameObject;
         //set the material
         Material newMat = Resources.Load("Materials/" + newPieceDef[1]) as Material;
         newPiece.GetComponent<GamePiece>().BaseMat = newMat;
+
+        //set the owner
+        newPiece.GetComponent<GamePiece>().OwnerIndex = activePlayer;
+
+        //set it to held state
+        GetComponent<GrabObject>().GrabTarget(newPiece);
     }
 
-    /*    private void calcMaxHeight()
+    /// <summary>
+    /// Calculate maximum height for each player's stack
+    /// Update the player objects with that value
+    /// </summary>
+    private void StackHeights()
     {
-        float maxHeight = 0f;
+        //make a hash table for the stacks
+        //values default to 0f
+        float[] stackHeights = new float[playerCount];
 
         GameObject[] pieceList = GameObject.FindGameObjectsWithTag("GamePiece");
 
-        //loop through each object in the stack
+        //loop through each peice in play
         foreach(GameObject piece in pieceList)
         {
-            //update max height with top of bounding box
-            if (piece.GetComponent<ObjectTags>().stacked)
+            //piece still held, don't count it, move on
+            if (piece.GetComponent<GamePiece>().Held)
             {
-                maxHeight = Mathf.Max(maxHeight, piece.GetComponent<Collider>().bounds.max.y); //this needs adjusting to allow for multiple colliders
+                continue;
+            }
+
+            //piece moving (falling), don't count it, move on
+            if (piece.GetComponent<Rigidbody>().velocity.magnitude > 0.6)
+            {
+                continue;
+            }
+
+            //owner of stack
+            int pieceOwner = piece.GetComponent<GamePiece>().OwnerIndex;
+
+            //piece not owned, don't count it, move on
+            if (pieceOwner < 0)
+            {
+                continue;
+            }
+
+            //top of axis-aligned bounding box
+            float pieceHeight = piece.GetComponent<Collider>().bounds.max.y;
+
+            //update stack heights if greater
+            if (pieceHeight > stackHeights[pieceOwner])
+            {
+                stackHeights[pieceOwner] = pieceHeight;
             }
         }
 
-        Debug.Log("Stack height: " + maxHeight.ToString("0.0"));
+        //write the heights to the player objects
+        for(int i = 0; i < stackHeights.Length; i++)
+        {
+            playerArray[i].UpdateScore(stackHeights[i]);
+        }
+
+        //Debug.Log("Heights: " + stackHeights[0] + " | " + stackHeights[1] + " | " + stackHeights[2]);
     }
-*/
+
+    /// <summary>
+    /// Decrease a player's lofe count, triggered when a piece is destroyed
+    /// </summary>
+    /// <param name="playerIndex">The owner of the destroyed piece, to lose a life</param>
+    private void LifeLost(int playerIndex)
+    {
+        playerArray[playerIndex].LoseLife();
+    }
+
+    /// <summary>
+    /// End the game and display winner details
+    /// </summary>
+    private void GameEnd()
+    {
+        //final check of stack heights
+        StackHeights();
+
+        //sort the players in ascending score
+        Array.Sort(playerArray, new PlayerComparer());
+        
+        //rearrange scorecards
+        for (int i = 0; i < playerCount; i++)
+        {
+            Vector2 scorecardPos = PlayerCardPosition(playerCount, i, 0f); //position for the scorecard
+            int placing = i + 1;
+            playerArray[i].GameEndScorecard(scorecardPos, placing); //update the scorecard
+        }
+    }
 }

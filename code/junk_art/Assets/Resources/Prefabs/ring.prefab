@@ -343,6 +343,7 @@ GameObject:
   - component: {fileID: 8446109030084807507}
   - component: {fileID: 4827371595890872137}
   - component: {fileID: 5647437238170912297}
+  - component: {fileID: 5423498113067386798}
   m_Layer: 8
   m_Name: ring
   m_TagString: GamePiece
@@ -442,3 +443,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   held: 0
   stackOwner: 0
+--- !u!65 &5423498113067386798
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7941648353992059526}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 3.1668482, y: 3.166848, z: 0.98480815}
+  m_Center: {x: 0.000000059604645, y: 0, z: 0.000000029802322}

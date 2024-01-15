@@ -148,6 +148,7 @@ GameObject:
   - component: {fileID: 2322596791872313864}
   - component: {fileID: 1288420510377213015}
   - component: {fileID: 9171978557366177389}
+  - component: {fileID: 1266491510144778986}
   m_Layer: 0
   m_Name: plate
   m_TagString: GamePiece
@@ -247,3 +248,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   held: 0
   stackOwner: 0
+--- !u!65 &1266491510144778986
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4268138156637649885}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 10.4, y: 3.5, z: 0.5}
+  m_Center: {x: 0, y: 0, z: 0}

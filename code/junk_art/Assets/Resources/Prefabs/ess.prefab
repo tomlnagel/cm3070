@@ -113,6 +113,7 @@ GameObject:
   - component: {fileID: 5610274512004207694}
   - component: {fileID: 6485715321669437669}
   - component: {fileID: 8168425832590627814}
+  - component: {fileID: 5046278695861258897}
   m_Layer: 0
   m_Name: ess
   m_TagString: GamePiece
@@ -212,3 +213,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   held: 0
   stackOwner: 0
+--- !u!65 &5046278695861258897
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6258682425314899355}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2, y: 2, z: 2}
+  m_Center: {x: 0, y: 0, z: 0}

@@ -9,24 +9,25 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Properties and methods to manage picking up and droppin game pieces
+/// Properties and methods to manage picking up and dropping game pieces
 /// </summary>
 public class GrabObject : MonoBehaviour
 {
-    [Header("Grab settings")]
-    [SerializeField] private string grabTag = "GamePiece"; //tag of grabable object
+    [Header("Grab settings")]    
     [SerializeField] private Camera playerCamera; //current player's camera
     [SerializeField] private Transform grabFocus; //grab focus point
     [SerializeField] private Transform holdFocus; //hold focus point
-    [SerializeField] private float grabRange = 40f; //max range to grab object
     [SerializeField] private float grabForce = 2f; //force to pull object to grab focus
     [SerializeField] private float scrollSpeed = 0.5f; //speed to move while srolling
     [SerializeField] private float maxScroll = 10f; //maximum Z offset from grab point
-    
+
+    //[SerializeField] private float grabRange = 40f; //max range to grab object
+    //[SerializeField] private string grabTag = "GamePiece"; //tag of grabable object
+
     private float scrollDistance = 0f; //current Z offset from grab point
     private GameObject heldObject; //currently held object
-    private Rigidbody heldObjectRB; //RB of grabbed object
-    private bool rotating = false; //is the held object being rotated
+    private Rigidbody heldObjectRB; //RB of held object
+    private bool rotating = false; //is the held object being rotated?
 
     //events
     public delegate void StartRotating();
@@ -34,6 +35,9 @@ public class GrabObject : MonoBehaviour
 
     public delegate void StopRotating();
     public static event StopRotating onRotateStop;
+
+    public delegate void StopHolding();
+    public static event StopHolding onDrop;
 
     //once per frame
     void Update()
@@ -48,6 +52,7 @@ public class GrabObject : MonoBehaviour
                 return;
             }
 
+            /* don't need this now peices spawn in held state
             //cast ray through mouse location
             Ray MouseRay = playerCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(MouseRay, out RaycastHit HitInfo, grabRange))
@@ -57,6 +62,7 @@ public class GrabObject : MonoBehaviour
                     GrabTarget(HitInfo.transform.gameObject);
                 }                
             }
+            */
         }
 
         if (heldObject)
@@ -64,12 +70,12 @@ public class GrabObject : MonoBehaviour
             //rotating mode
             if (Input.GetKey(KeyCode.Space))
             {
-                onRotateStart?.Invoke();
+                if (!rotating) onRotateStart?.Invoke();
                 rotating = true;
             }
             else
             {
-                onRotateStop?.Invoke();
+                if (rotating) onRotateStop?.Invoke();
                 rotating = false;
 
                 //restrict max scrolling
@@ -100,7 +106,7 @@ public class GrabObject : MonoBehaviour
     /// Set the object's state as 'held'
     /// </summary>
     /// <param name="target">The object to pick up</param>
-    private void GrabTarget(GameObject target)
+    public void GrabTarget(GameObject target)
     {
         //check target has an RB
         if (target.GetComponent<Rigidbody>())
@@ -146,7 +152,10 @@ public class GrabObject : MonoBehaviour
 
         //reset hold focus to grab point
         holdFocus.position = grabFocus.position;
-        scrollDistance = 0f;        
+        scrollDistance = 0f;
+
+        //broadcast an event
+        onDrop?.Invoke();
     }
 
     /// <summary>

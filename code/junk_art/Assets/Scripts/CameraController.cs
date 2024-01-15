@@ -135,15 +135,21 @@ public class CameraController : MonoBehaviour
         LerpingCameraUpdater.SetFromTransform(transform);
 
         //event subscriptions
-        GrabObject.onRotateStart += DisableCameraControls;
+        GrabObject.onRotateStart += DisableCameraControls; //don't move camera while rotating an object
+        GrabObject.onRotateStart += DisableCursor; //don't show cursor while rotating an object
         GrabObject.onRotateStop += EnableCameraControls;
+        GrabObject.onRotateStop += EnableCursor;
+        GrabObject.onDrop += EnableCursor; //prevent cursor lockout by droping while disabled
     }
 
     private void OnDisable()
     {
         //event unsubscriptions
         GrabObject.onRotateStart -= DisableCameraControls;
+        GrabObject.onRotateStart -= DisableCursor;
         GrabObject.onRotateStop -= EnableCameraControls;
+        GrabObject.onRotateStop -= EnableCursor;
+        GrabObject.onDrop -= EnableCursor;
     }
 
     /// <summary>
@@ -160,6 +166,23 @@ public class CameraController : MonoBehaviour
     public void EnableCameraControls()
     {
         controlsEnabled = true;
+    }
+
+    /// <summary>
+    /// Hide and lock the mouse cursor
+    /// </summary>
+    public void DisableCursor()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    /// <summary>
+    /// Show and unlock the mouse cursor
+    /// </summary>
+    public void EnableCursor()
+    {
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
     }
 
     /// <summary>
@@ -208,14 +231,13 @@ public class CameraController : MonoBehaviour
         // Hide and lock cursor when right mouse button pressed
         if (Input.GetMouseButtonDown(1))
         {
-            Cursor.lockState = CursorLockMode.Locked;
+            DisableCursor();
         }
 
         // Unlock and show cursor when right mouse button released
         if (Input.GetMouseButtonUp(1))
         {
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
+            EnableCursor();
         }
 
         // Rotation

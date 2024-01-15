@@ -686,6 +686,10 @@
       <Project>{B65D76B7-1BA7-DD63-469B-BB36D2F549E6}</Project>
       <Name>Unity.CollabProxy.Editor</Name>
     </ProjectReference>
+    <ProjectReference Include="UnityFx.Outline.csproj">
+      <Project>{7A95D1AA-2BAA-EDF3-FBB6-CED9BF638F3B}</Project>
+      <Name>UnityFx.Outline</Name>
+    </ProjectReference>
     <ProjectReference Include="Unity.Rider.Editor.csproj">
       <Project>{055165C7-5F24-5D40-72D4-32435924D004}</Project>
       <Name>Unity.Rider.Editor</Name>
@@ -693,6 +697,10 @@
     <ProjectReference Include="Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.csproj">
       <Project>{0CDC6238-4A84-698B-686F-EE1FB995E646}</Project>
       <Name>Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="UnityFx.Outline.URP.csproj">
+      <Project>{58B41C3B-C1AB-B244-DCB7-0E1ACA4F7664}</Project>
+      <Name>UnityFx.Outline.URP</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.ShaderGraph.Editor.csproj">
       <Project>{B1D3DE1E-8549-5836-C824-650818A8CA38}</Project>
@@ -705,6 +713,10 @@
     <ProjectReference Include="Unity.TextMeshPro.csproj">
       <Project>{64AE4462-0F41-2DE3-4FD5-7A5F5661DBF6}</Project>
       <Name>Unity.TextMeshPro</Name>
+    </ProjectReference>
+    <ProjectReference Include="UnityFx.Outline.Editor.csproj">
+      <Project>{5202EFC4-C032-1677-6A2C-AD820ACA4C31}</Project>
+      <Name>UnityFx.Outline.Editor</Name>
     </ProjectReference>
     <ProjectReference Include="UnityEditor.UI.csproj">
       <Project>{E884C412-96ED-8E22-842A-D9BAB77E25E5}</Project>

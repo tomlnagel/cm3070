@@ -133,6 +133,7 @@ GameObject:
   - component: {fileID: 7033656830984883487}
   - component: {fileID: 9141760149341330275}
   - component: {fileID: 120776260273528405}
+  - component: {fileID: 3421395755177126891}
   m_Layer: 0
   m_Name: jump
   m_TagString: GamePiece
@@ -232,3 +233,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   held: 0
   stackOwner: 0
+--- !u!65 &3421395755177126891
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8835057442333469898}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2, y: 2.0000002, z: 2}
+  m_Center: {x: 0, y: 0, z: 0}

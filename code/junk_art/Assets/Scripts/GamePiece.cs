@@ -10,11 +10,10 @@ public class GamePiece : MonoBehaviour
 {
     //statuses
     [SerializeField] private bool held;
-    [SerializeField] private int stackOwner;
+    [SerializeField] private int ownerIndex = -1; //default no owner
 
     //Materials
     private Material baseMat; //default material for this piece
-    private Material heldMat; //material for a held peice
     private MeshRenderer thisRenderer; //the object's renderer
 
     //object destruction
@@ -24,18 +23,19 @@ public class GamePiece : MonoBehaviour
     private float destroyTimer; //seconds since flashing started
     private float flashTimer; //seconds since last flash
 
+    //events
+    public delegate void Destruction(int owner);
+    public static event Destruction onDestruction;
+
     //initialise piece
     void Start()
     {
-        heldMat = Resources.Load<Material>("Materials/Held_Piece_Mat");
-
-        held = false;
         thisRenderer = GetComponent<MeshRenderer>(); //get the renderer for this object
 
         thisRenderer.material = baseMat;
 
         destroy = false;
-        detroyLen = 2.6f;
+        detroyLen = 2.0f;
         flashLen = 0.2f;
         destroyTimer = 0f;
         flashTimer = 0f;
@@ -55,10 +55,10 @@ public class GamePiece : MonoBehaviour
         set { held = value; } 
     } 
 
-    public int StackOwner
+    public int OwnerIndex
     {
-        get { return stackOwner; }
-        //no need for setter
+        get { return ownerIndex; }
+        set { ownerIndex = value; }
     }
 
     public Material BaseMat
@@ -79,6 +79,7 @@ public class GamePiece : MonoBehaviour
 
         if (destroyTimer >= detroyLen)
         {
+            onDestruction?.Invoke(ownerIndex);
             Destroy(gameObject);
         }
         
@@ -91,34 +92,34 @@ public class GamePiece : MonoBehaviour
 
     /// <summary>
     /// Set this object to 'held'
-    /// Update material to indicate status
+    /// Update layer to indicate status
     /// </summary>
     public void Pickup()
     {
         held = true;
-        thisRenderer.material = heldMat;
+        gameObject.layer = LayerMask.NameToLayer("Outline");
     }
 
     /// <summary>
     /// Set this object to not 'held'
-    /// Update material to indicate status
+    /// Update layer to indicate status
     /// </summary>
     public void Drop()
     {
         held = false;
-        thisRenderer.material = baseMat;
+        gameObject.layer = LayerMask.NameToLayer("Default");
     }
 
     private void OnCollisionEnter(Collision collision)
     {
+        
+        //limited checks while piece is held
         if (held)
         {
-            //no collision triggers while piece held
             return;
         }
 
         string otherTag = collision.gameObject.tag;
-        //GamePiece otherPiece = collision.gameObject.GetComponent<GamePiece>();
 
         //collision with 'ground'
         if (otherTag == "Ground")
@@ -127,7 +128,7 @@ public class GamePiece : MonoBehaviour
             return;
         }
 
-        //collsion with 'base'
+        //collision with 'base'
         if (otherTag == "Base")
         {
             int owner = collision.gameObject.GetComponent<PlayerBase>().OwnerIndex;
@@ -135,9 +136,10 @@ public class GamePiece : MonoBehaviour
             return;
         }
 
+        //collision with another piece
         if (otherTag == "GamePiece")
         {
-            int owner = collision.gameObject.GetComponent<GamePiece>().StackOwner;
+            int owner = collision.gameObject.GetComponent<GamePiece>().OwnerIndex;
             AddToStack(owner);
             return;
         }
@@ -150,8 +152,13 @@ public class GamePiece : MonoBehaviour
     /// <param name="owner">The player's index</param>
     private void AddToStack(int owner)
     {
-        //flag this piece as stacked
-        stackOwner = owner;
+        //don't make a piece unowned
+        if (owner < 1)
+        {
+            return;
+        }
+
+        ownerIndex = owner;
     }
 
     /// <summary>
@@ -159,7 +166,7 @@ public class GamePiece : MonoBehaviour
     /// </summary>
     private void GroundPiece()
     {
-        //set this piece for destruction
         destroy = true;
     }
+
 }

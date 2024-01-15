@@ -13,12 +13,14 @@ public class GamePieceDeck : ScriptableObject
     public int PiecesLeft
     {
         get { return piecesLeft; }
-        //no public setter required
+        //no  setter required
     }
+
     /// <summary>
     /// Initialise piece deck with one of each combination of piece and material
     /// </summary>
-    public void InitDeck()
+    /// <param name="playerCount">The number of players to create a deck for</param>
+    public void InitDeck(int playerCount)
     {
         pieceNames = new string[] { "arch", "ball", "cup", "ess", "fatCylinder", "jump", "plate", "pyramid", "ring", "rocker", "spindle", "stand", "thinCylinder" };
         matNames = new string[] { "Green_Piece_Mat", "Orange_Piece_Mat", "Teal_Piece_Mat", "Purple_Piece_Mat" };
@@ -38,6 +40,10 @@ public class GamePieceDeck : ScriptableObject
 
         //shuffle it
         ShuffleDeck();
+
+        //set deck size for player count
+        //ensure equal number of pecies per player
+        piecesLeft = (int)(Mathf.Floor(piecesLeft / playerCount) * playerCount);
     }
 
     /// <summary>
