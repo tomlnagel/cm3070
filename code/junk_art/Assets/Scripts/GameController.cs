@@ -9,8 +9,9 @@ using System;
 public class GameController : MonoBehaviour
 {
 
-    [SerializeField]
-    private int activePlayer;
+    [SerializeField] private int activePlayer;
+    [SerializeField] private Canvas gameUI;
+    [SerializeField] private Canvas pauseMenu;
 
     private int playerCount; //number of players
     private float radius = 13f; //radius of the game space
@@ -18,9 +19,8 @@ public class GameController : MonoBehaviour
     private GamePieceDeck deck; //deck of game pieces
     private int startingLives; //number of lives each player starts with
 
-    //temprorary arrays until menu system built
-    string[] tempNames = {"Tom", "Lucy", "Tim" , "Polly"};
-    Color[] tempCols = { new Color(0.8f, 0.4f, 0.1f, 1), new Color(0.3f, 0.1f, 0.7f, 1), new Color(0.5f, 0.1f, 0.1f, 1), new Color(0.1f, 0.6f, 0.1f) };
+    string[] playerNames; //array to contain player names
+    Color[] playerColors; //array to contain player colors
 
     private void OnEnable()
     {
@@ -37,11 +37,13 @@ public class GameController : MonoBehaviour
         Player.onLivesOut -= GameEnd;
     }
 
-    void Start()
+    private void Start()
     {
         //value will be set through a menu
-        playerCount = 4;        
+        //playerCount = 4;        
         startingLives = 3;
+
+        SetupPlayers(); //get player count and fill arrays
 
         deck = ScriptableObject.CreateInstance<GamePieceDeck>(); //instantiate a deck of pieces
         deck.InitDeck(playerCount); //populate and shuffle the deck
@@ -51,6 +53,45 @@ public class GameController : MonoBehaviour
         //start the game
         activePlayer = -1;
         NextPlayer();        
+    }
+
+    private void Update()
+    {
+        //open menu on Esc
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            OpenPauseMenu();
+        }
+    }
+
+    /// <summary>
+    /// Populate the playerCount variable and fill the player details arrays
+    /// </summary>
+    private void SetupPlayers()
+    {
+        playerCount = GameSettings.PlayerCount(); //get the number of players
+
+        playerNames = new string[playerCount]; //set up the name array
+        playerColors = new Color[playerCount]; //set up the color array
+
+        //populate name array
+        playerNames[0] = GameSettings.Player1_name;
+        playerNames[1] = GameSettings.Player2_name;
+        if (playerCount >= 3) playerNames[2] = GameSettings.Player3_name;
+        if (playerCount >= 4) playerNames[3] = GameSettings.Player4_name;
+
+        //populate color array
+        playerColors[0] = GameSettings.Player1_color;
+        playerColors[1] = GameSettings.Player2_color;
+        if (playerCount >= 3) playerColors[2] = GameSettings.Player3_color;
+        if (playerCount >= 4) playerColors[3] = GameSettings.Player4_color;
+
+        //fill defaults for any blanks
+        for (int i = 0; i < playerNames.Length; i++)
+        {
+            if (playerNames[i] == "") playerNames[i] = "Player " + (i + 1);
+        }
+
     }
 
     /// <summary>
@@ -69,20 +110,21 @@ public class GameController : MonoBehaviour
             newPlayer.PlayerHome = PlayerHomePos(playerCount, i); //set base position
             newPlayer.PlayerRotation = PlayerHomeRotation(playerCount, i); //set base rotation
             newPlayer.CardPosition = PlayerCardPosition(playerCount, i, -130f); //set the scorecard position
-            newPlayer.Lives = startingLives; //set nuber of lives
+            newPlayer.Lives = startingLives; //set number of lives
 
-            //access temprorary arrays
+            //access name array, with fallback in case of out-of-bounds
             try
             {
-                newPlayer.PlayerName = tempNames[i];
+                newPlayer.PlayerName = playerNames[i];
             } catch
             {
-                newPlayer.PlayerName = "anotherOne";
+                newPlayer.PlayerName = "Player " + i+1;
             }
 
+            //access colour array, with fallback in case of out-of-bounds
             try
             {
-                newPlayer.PlayerColor = tempCols[i];
+                newPlayer.PlayerColor = playerColors[i];
             } catch
             {
                 newPlayer.PlayerColor = new Color(0.4f, 0.4f, 0.4f, 1f);
@@ -136,7 +178,7 @@ public class GameController : MonoBehaviour
     private Vector2 PlayerCardPosition(int pCount, int pNum, float y)
     {
         //canvas width
-        float canvW = GameObject.Find("Canvas").GetComponent<RectTransform>().rect.width;
+        float canvW = GameObject.Find("gameUI").GetComponent<RectTransform>().rect.width;
 
         //card width
         float cardW = 300f;
@@ -296,5 +338,25 @@ public class GameController : MonoBehaviour
             int placing = i + 1;
             playerArray[i].GameEndScorecard(scorecardPos, placing); //update the scorecard
         }
+    }
+
+    public void OpenPauseMenu()
+    {
+        //disable all camera controls while in menu
+        transform.GetComponent<CameraController>().enabled = false;
+
+        //switch UI canvases
+        pauseMenu.enabled = true;
+        gameUI.enabled = false;
+    }
+
+    public void ClosePauseMenu()
+    {
+        //re-enable camera controls
+        transform.GetComponent<CameraController>().enabled = true;
+
+        //switch UI canvases
+        pauseMenu.enabled = false;
+        gameUI.enabled = true;
     }
 }
