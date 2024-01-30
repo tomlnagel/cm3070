@@ -5,6 +5,12 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 
+/// <summary>
+/// Main menu functions: 
+/// setting up players
+/// starting the game
+/// exiting the application
+/// </summary>
 public class MainMenu : MonoBehaviour
 {
     [SerializeField] private TMP_InputField p1Name;
@@ -52,6 +58,8 @@ public class MainMenu : MonoBehaviour
 
         Transform p3Button = transform.Find("player3_enable");
         Transform p4Button = transform.Find("player4_enable");
+        Transform p3Picker = transform.Find("player3_color");
+        Transform p4Picker = transform.Find("player4_color");
 
         if (GameSettings.Player3_enabled)
         {
@@ -61,10 +69,15 @@ public class MainMenu : MonoBehaviour
 
             //enable p4 button interaction
             p4Button.GetComponent<Button>().enabled = true;
+            p4Button.Find("cross").GetComponent<Image>().color = new Color(.78f, .13f, 0f);
 
             //enable name inputs
-            EnableInput(p3Name);
-            EnableInput(p4Name);
+            ToggleInputField(p3Name, true);
+            ToggleInputField(p4Name, true);
+
+            //enable color pickers
+            ToggleColorPicker(p3Picker, true);
+            ToggleColorPicker(p4Picker, true);
         }
         else
         {
@@ -74,10 +87,15 @@ public class MainMenu : MonoBehaviour
 
             //disable p4 button interaction
             p4Button.GetComponent<Button>().enabled = false;
+            p4Button.Find("cross").GetComponent<Image>().color = new Color(.3f, .1f, .1f);
 
             //disable name inputs
-            DisableInput(p3Name);
-            DisableInput(p4Name);
+            ToggleInputField(p3Name, false);
+            ToggleInputField(p4Name, false);
+
+            //disable color pickers
+            ToggleColorPicker(p3Picker, false);
+            ToggleColorPicker(p4Picker, false);
         }
     }
 
@@ -89,16 +107,19 @@ public class MainMenu : MonoBehaviour
         GameSettings.Player4_enabled = !GameSettings.Player4_enabled; //switch state
 
         Transform p4Button = transform.Find("player4_enable");
+        Transform p4Picker = transform.Find("player4_color");
 
         if (GameSettings.Player4_enabled)
         {
             PlayerEnableImage(p4Button, true);
-            EnableInput(p4Name);
+            ToggleInputField(p4Name, true);
+            ToggleColorPicker(p4Picker, true);
         }
         else
         {
             PlayerEnableImage(p4Button, false);
-            DisableInput(p4Name);
+            ToggleInputField(p4Name, false);
+            ToggleColorPicker(p4Picker, false);
         }
     }
 
@@ -119,23 +140,39 @@ public class MainMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Disable an input field and change background color to indicate
+    /// Set interction state and background color of a text input field
     /// </summary>
-    /// <param name="field">The TMP Input Field to disable</param>
-    private void DisableInput(TMP_InputField field)
+    /// <param name="field">The TMP Input field to change</param>
+    /// <param name="isEnabled">The enabled state of the field</param>
+    private void ToggleInputField(TMP_InputField field, bool isEnabled)
     {
-        field.enabled = false; //disable interaction
-        field.image.color = new Color(0.5f, 0.5f, 0.5f); //change input background
+        //change interaction
+        field.enabled = isEnabled;
+
+        //change background color
+        field.image.color = (isEnabled) ? new Color(1f, 1f, 1f) : new Color(0.5f, 0.5f, 0.5f);
     }
 
     /// <summary>
-    /// Enable an input field and change background color to indicate
+    /// Set interction state and color alpha of a color picker button
     /// </summary>
-    /// <param name="field">The TMP Input Field to enable</param>
-    private void EnableInput(TMP_InputField field)
+    /// <param name="picker">The transform of the color picker button</param>
+    /// <param name="isEnabled">The enabled state of the button</param>
+    private void ToggleColorPicker(Transform picker, bool isEnabled)
     {
-        field.enabled = true; //enable interaction
-        field.image.color = new Color(1f, 1f, 1f); //change input background
+        //get the color swatch
+        Transform swatch = picker.Find("swatch");
+
+        //change the alpha of button and swatch
+        Color buttonCol = picker.GetComponent<Image>().color;
+        Color swatchCol = swatch.GetComponent<Image>().color;
+        buttonCol.a = (isEnabled) ? 1f : 0.7f;
+        swatchCol.a = (isEnabled) ? 1f : 0.7f;
+        picker.GetComponent<Image>().color = buttonCol;
+        swatch.GetComponent<Image>().color = swatchCol;
+
+        //change interaction of button
+        picker.GetComponent<Button>().enabled = isEnabled;
     }
 
     /// <summary>
@@ -178,7 +215,9 @@ public class MainMenu : MonoBehaviour
     {
         p1swatch.color = GameSettings.Player1_color;
         p2swatch.color = GameSettings.Player2_color;
-        p3swatch.color = GameSettings.Player3_color;
-        p4swatch.color = GameSettings.Player4_color;
+        
+        //don't update disabled players
+        if (GameSettings.Player3_enabled) p3swatch.color = GameSettings.Player3_color;
+        if (GameSettings.Player4_enabled) p4swatch.color = GameSettings.Player4_color;
     }
 }

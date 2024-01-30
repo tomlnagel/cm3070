@@ -21,13 +21,12 @@ public class GrabObject : MonoBehaviour
     [SerializeField] private float scrollSpeed = 0.5f; //speed to move while srolling
     [SerializeField] private float maxScroll = 10f; //maximum Z offset from grab point
 
-    //[SerializeField] private float grabRange = 40f; //max range to grab object
-    //[SerializeField] private string grabTag = "GamePiece"; //tag of grabable object
-
     private float scrollDistance = 0f; //current Z offset from grab point
     private GameObject heldObject; //currently held object
     private Rigidbody heldObjectRB; //RB of held object
     private bool rotating = false; //is the held object being rotated?
+
+    private bool controlsEnabled = true; //can we pickup/drop objects?
 
     //events
     public delegate void StartRotating();
@@ -39,44 +38,43 @@ public class GrabObject : MonoBehaviour
     public delegate void StopHolding();
     public static event StopHolding onDrop;
 
-    //once per frame
-    void Update()
+    private void OnEnable()
     {
-        //LMB pressed
-        if (Input.GetMouseButtonDown(0))
+        //event subscriptions
+        GameController.onGameEnded += DisableControls;
+    }
+
+    private void OnDisable()
+    {
+        //event subscriptions
+        GameController.onGameEnded -= DisableControls;
+    }
+
+    //once per frame
+    private void Update()
+    {
+        //do nothing if controls disabled
+        if (!controlsEnabled) return;
+
+        if (heldObject)
         {
-            //check if already grabbing
-            if (heldObject)
+            //LMB pressed
+            if (Input.GetMouseButtonDown(0))
             {
                 DropObject();
                 return;
             }
 
-            /* don't need this now peices spawn in held state
-            //cast ray through mouse location
-            Ray MouseRay = playerCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(MouseRay, out RaycastHit HitInfo, grabRange))
-            {
-                if (HitInfo.transform.gameObject.tag == grabTag)
-                {
-                    GrabTarget(HitInfo.transform.gameObject);
-                }                
-            }
-            */
-        }
-
-        if (heldObject)
-        {
             //rotating mode
             if (Input.GetKey(KeyCode.Space))
             {
-                if (!rotating) onRotateStart?.Invoke();
-                rotating = true;
+                if (!rotating) onRotateStart?.Invoke(); //trigger event
+                rotating = true; //set flag
             }
             else
             {
-                if (rotating) onRotateStop?.Invoke();
-                rotating = false;
+                if (rotating) onRotateStop?.Invoke(); //trigger event
+                rotating = false; //set flag
 
                 //restrict max scrolling
                 scrollDistance = Mathf.Clamp(scrollDistance + Input.mouseScrollDelta.y * scrollSpeed, -maxScroll, maxScroll);
@@ -185,7 +183,12 @@ public class GrabObject : MonoBehaviour
             Input.mouseScrollDelta.y * 5
             );
 
-        heldObjectRB.transform.eulerAngles += mouseMovement;
+        //rotate the object
+        heldObjectRB.transform.Rotate(mouseMovement);
     }
 
+    private void DisableControls()
+    {
+        controlsEnabled = false;
+    }
 }

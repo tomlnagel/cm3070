@@ -24,6 +24,11 @@ public static class GameSettings
     public static Color Player3_color { get; set; } = new Color(0.02f, 0.35f, 0.02f);
     public static Color Player4_color { get; set; } = new Color(0.6f, 0.02f, 0.6f);
 
+    //starting life count for each player
+    public static int StartingLives { get; set; } = 3;
+    //score penalty for losing a life
+    public static int LifePenalty { get; set; } = 10;
+
 
     /// <summary>
     /// Get number of active players this game, 
@@ -38,6 +43,23 @@ public static class GameSettings
         if (Player4_enabled) playerCount += 1;
 
         return playerCount;
+    }
+
+    /// <summary>
+    /// Reset all settings to default values
+    /// </summary>
+    public static void Reset()
+    {
+        Player3_enabled = true;
+        Player4_enabled = true;
+        Player1_name = null;
+        Player2_name = null;
+        Player3_name = null;
+        Player4_name = null;
+        Player1_color = new Color(0.6f, 0.02f, 0.02f);
+        Player2_color = new Color(0.2f, 0.02f, 0.6f);
+        Player3_color = new Color(0.02f, 0.35f, 0.02f);
+        Player4_color = new Color(0.6f, 0.02f, 0.6f);
     }
 
 }

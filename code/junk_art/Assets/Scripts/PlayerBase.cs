@@ -7,14 +7,6 @@ using UnityEngine;
 /// </summary>
 public class PlayerBase : MonoBehaviour
 {
-
-    [SerializeField]
-    private int ownerIndex;
-
-    public int OwnerIndex
-    {
-        get { return ownerIndex; }
-        set { ownerIndex = value; }
-    }
+    [SerializeField] public int OwnerIndex { get; set; }
 
 }

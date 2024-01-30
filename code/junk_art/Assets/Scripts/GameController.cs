@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Properties and methods for intialising the game state and managing the game while running
@@ -17,17 +18,22 @@ public class GameController : MonoBehaviour
     private float radius = 13f; //radius of the game space
     private Player[] playerArray; //declare the player array
     private GamePieceDeck deck; //deck of game pieces
-    private int startingLives; //number of lives each player starts with
 
     string[] playerNames; //array to contain player names
     Color[] playerColors; //array to contain player colors
+
+    private bool gamePaused; //is the game paused?
+    private bool gameOver; //is the game finished?
+
+    //events
+    public delegate void GameEnded();
+    public static event GameEnded onGameEnded;
 
     private void OnEnable()
     {
         //event subscriptions
         GamePiece.onDestruction += LifeLost;
         Player.onLivesOut += GameEnd;
-
     }
 
     private void OnDisable()
@@ -39,28 +45,26 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
-        //value will be set through a menu
-        //playerCount = 4;        
-        startingLives = 3;
-
         SetupPlayers(); //get player count and fill arrays
 
         deck = ScriptableObject.CreateInstance<GamePieceDeck>(); //instantiate a deck of pieces
         deck.InitDeck(playerCount); //populate and shuffle the deck
 
         CreatePlayers();
-        
+
         //start the game
+        gameOver = false;
         activePlayer = -1;
         NextPlayer();        
     }
 
     private void Update()
     {
-        //open menu on Esc
+        //open/close menu on Esc
         if (Input.GetKey(KeyCode.Escape))
         {
-            OpenPauseMenu();
+            if (gamePaused) ClosePauseMenu();
+            if (!gamePaused) OpenPauseMenu();
         }
     }
 
@@ -110,7 +114,7 @@ public class GameController : MonoBehaviour
             newPlayer.PlayerHome = PlayerHomePos(playerCount, i); //set base position
             newPlayer.PlayerRotation = PlayerHomeRotation(playerCount, i); //set base rotation
             newPlayer.CardPosition = PlayerCardPosition(playerCount, i, -130f); //set the scorecard position
-            newPlayer.Lives = startingLives; //set number of lives
+            newPlayer.Lives = GameSettings.StartingLives; //set number of lives
 
             //access name array, with fallback in case of out-of-bounds
             try
@@ -180,7 +184,7 @@ public class GameController : MonoBehaviour
         //canvas width
         float canvW = GameObject.Find("gameUI").GetComponent<RectTransform>().rect.width;
 
-        //card width
+        //scorecard width
         float cardW = 300f;
 
         //zone size
@@ -203,10 +207,10 @@ public class GameController : MonoBehaviour
     public void NextPlayer()
     {
         StackHeights(); //recalculate stack heights
-        if (activePlayer >= 0) playerArray[activePlayer].SetInactive(); //update UI for old player, if relevant
+        if (activePlayer >= 0) playerArray[activePlayer].SetInactive(); //update scorecard for old player
         activePlayer = (activePlayer + 1) % playerCount; //advance player
         AlignCameraForPlayer(activePlayer); //realign camera
-        playerArray[activePlayer].SetActive(); //update UI for new player
+        playerArray[activePlayer].SetActive(); //update scorecard for new player
         SpawnGamePiece(); //give the new player a piece to add
     }
 
@@ -219,13 +223,15 @@ public class GameController : MonoBehaviour
         //need to disable camera control script to allow this script to move camera
         transform.GetComponent<CameraController>().enabled = false;
 
+        //calculate new posistion
         Vector3 cameraPos = playerArray[playerNum].PlayerHome * 2.5f; //behind player home
         cameraPos.y = 25f; //above plane
 
         transform.position = cameraPos; //move the camera
         transform.LookAt(Vector3.zero); //rotate to face origin
 
-        transform.GetComponent<CameraController>().enabled = true; //re-enable normal controls
+        //re-enable normal controls
+        transform.GetComponent<CameraController>().enabled = true; 
     }
 
     /// <summary>
@@ -233,20 +239,25 @@ public class GameController : MonoBehaviour
     /// </summary>
     public void SpawnGamePiece()
     {
+        //do nothing after game ends
+        if (gameOver) return;
+
+        //end the game if no pieces left
         if (deck.PiecesLeft <= 0)
         {
             GameEnd();
             return;
         }
 
+        //name ond color of next peie in deck
         string[] newPieceDef = deck.NextPiece();
 
         //spawn a new piece at the hold point
         GameObject holdPoint = GameObject.Find("Hold Point");
-        GameObject newPiece = Instantiate(Resources.Load("Prefabs/" + newPieceDef[0]), holdPoint.transform.position, UnityEngine.Random.rotation) as GameObject;
+        GameObject newPiece = Instantiate(Resources.Load<GameObject>("Prefabs/" + newPieceDef[0]), holdPoint.transform.position, UnityEngine.Random.rotation);
         
         //set the material
-        Material newMat = Resources.Load("Materials/" + newPieceDef[1]) as Material;
+        Material newMat = Resources.Load<Material>("Materials/" + newPieceDef[1]);
         newPiece.GetComponent<GamePiece>().BaseMat = newMat;
 
         //set the owner
@@ -262,6 +273,9 @@ public class GameController : MonoBehaviour
     /// </summary>
     private void StackHeights()
     {
+        //do nothing after game ends
+        if (gameOver) return;
+
         //make a hash table for the stacks
         //values default to 0f
         float[] stackHeights = new float[playerCount];
@@ -307,8 +321,6 @@ public class GameController : MonoBehaviour
         {
             playerArray[i].UpdateScore(stackHeights[i]);
         }
-
-        //Debug.Log("Heights: " + stackHeights[0] + " | " + stackHeights[1] + " | " + stackHeights[2]);
     }
 
     /// <summary>
@@ -317,7 +329,14 @@ public class GameController : MonoBehaviour
     /// <param name="playerIndex">The owner of the destroyed piece, to lose a life</param>
     private void LifeLost(int playerIndex)
     {
-        playerArray[playerIndex].LoseLife();
+        //do nothing if game already ended
+        if (gameOver) return;
+
+        //recalculate stack heights
+        StackHeights();
+
+        //update player object
+        playerArray[playerIndex].LoseLife(); 
     }
 
     /// <summary>
@@ -327,6 +346,15 @@ public class GameController : MonoBehaviour
     {
         //final check of stack heights
         StackHeights();
+
+        //set the gameover flag
+        gameOver = true;
+
+        //broadcast event to disable game controls
+        onGameEnded?.Invoke();
+
+        //disable 'next player' button
+        GameObject.Find("gameUI/nextPlayerButton").SetActive(false);
 
         //sort the players in ascending score
         Array.Sort(playerArray, new PlayerComparer());
@@ -340,6 +368,9 @@ public class GameController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Disable the game controls (pause game) and open pause menu
+    /// </summary>
     public void OpenPauseMenu()
     {
         //disable all camera controls while in menu
@@ -348,8 +379,14 @@ public class GameController : MonoBehaviour
         //switch UI canvases
         pauseMenu.enabled = true;
         gameUI.enabled = false;
+
+        //set flag
+        gamePaused = true;
     }
 
+    /// <summary>
+    /// Close pause menu and re-enable game controls
+    /// </summary>
     public void ClosePauseMenu()
     {
         //re-enable camera controls
@@ -358,5 +395,26 @@ public class GameController : MonoBehaviour
         //switch UI canvases
         pauseMenu.enabled = false;
         gameUI.enabled = true;
+
+        //set flag
+        gamePaused = false;
+    }
+
+    /// <summary>
+    /// Return from an active game to the main menu
+    /// </summary>
+    public void MainMenu()
+    {
+        GameSettings.Reset(); //reset game settings to default
+        SceneManager.LoadScene(0); //load the main menu
+    }
+
+    /// <summary>
+    /// Close the game application
+    /// </summary>
+    public void QuitGame()
+    {
+        Debug.Log("Quitting");
+        Application.Quit();
     }
 }

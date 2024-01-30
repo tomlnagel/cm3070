@@ -128,7 +128,7 @@ public class CameraController : MonoBehaviour
 
     private bool controlsEnabled = true;
 
-    void OnEnable()
+    private void OnEnable()
     {
         //intialise the states
         TargetCameraState.SetFromTransform(transform);
@@ -140,6 +140,8 @@ public class CameraController : MonoBehaviour
         GrabObject.onRotateStop += EnableCameraControls;
         GrabObject.onRotateStop += EnableCursor;
         GrabObject.onDrop += EnableCursor; //prevent cursor lockout by droping while disabled
+        GameController.onGameEnded += DisableCameraControls; //camera movement off when game over
+        GameController.onGameEnded += EnableCursor; //prevent cursor lockout by game ending while disabled
     }
 
     private void OnDisable()
@@ -150,6 +152,8 @@ public class CameraController : MonoBehaviour
         GrabObject.onRotateStop -= EnableCameraControls;
         GrabObject.onRotateStop -= EnableCursor;
         GrabObject.onDrop -= EnableCursor;
+        GameController.onGameEnded -= DisableCameraControls;
+        GameController.onGameEnded -= EnableCursor;
     }
 
     /// <summary>

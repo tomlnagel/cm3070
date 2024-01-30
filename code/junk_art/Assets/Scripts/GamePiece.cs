@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 /// <summary>
 /// Properties, statuses, and methods for a game piece
@@ -9,11 +10,12 @@ using UnityEngine;
 public class GamePiece : MonoBehaviour
 {
     //statuses
-    [SerializeField] private bool held;
-    [SerializeField] private int ownerIndex = -1; //default no owner
+    public bool Held { get; set; }
+    public int OwnerIndex { get; set; } = -1; //default no owner
+    public bool Stacked { get; set; } = false; //default unstacked
 
     //Materials
-    private Material baseMat; //default material for this piece
+    public Material BaseMat { get; set; } //default material for this piece
     private MeshRenderer thisRenderer; //the object's renderer
 
     //object destruction
@@ -23,6 +25,9 @@ public class GamePiece : MonoBehaviour
     private float destroyTimer; //seconds since flashing started
     private float flashTimer; //seconds since last flash
 
+    //audio
+    private AudioSource source;
+
     //events
     public delegate void Destruction(int owner);
     public static event Destruction onDestruction;
@@ -30,12 +35,14 @@ public class GamePiece : MonoBehaviour
     //initialise piece
     void Start()
     {
-        thisRenderer = GetComponent<MeshRenderer>(); //get the renderer for this object
+        thisRenderer = GetComponent<MeshRenderer>(); //get the renderer component
+        source = GetComponent<AudioSource>(); //get the audioSource component
 
-        thisRenderer.material = baseMat;
+        thisRenderer.material = BaseMat;
 
+        //game piece destruction settings
         destroy = false;
-        detroyLen = 2.0f;
+        detroyLen = 1.6f;
         flashLen = 0.2f;
         destroyTimer = 0f;
         flashTimer = 0f;
@@ -49,24 +56,6 @@ public class GamePiece : MonoBehaviour
         }
     }
 
-    public bool Held
-    { 
-        get { return held; } 
-        set { held = value; } 
-    } 
-
-    public int OwnerIndex
-    {
-        get { return ownerIndex; }
-        set { ownerIndex = value; }
-    }
-
-    public Material BaseMat
-    {
-        set { baseMat = value; }
-        //no need for getter
-    }
-
     /// <summary>
     /// Called once per update loop
     /// Flash this object while awating destruction by dis/enabling renderer
@@ -74,20 +63,28 @@ public class GamePiece : MonoBehaviour
     /// </summary>
     private void FlashAndDestroy()
     {
+        //event triggers at start of destruction timer
+        if (destroyTimer == 0f)
+        {
+            onDestruction?.Invoke(OwnerIndex);
+        }
+
+        //increment counters
         destroyTimer += Time.deltaTime;
         flashTimer += Time.deltaTime;
 
+        //destroy at end of total timer
         if (destroyTimer >= detroyLen)
         {
-            onDestruction?.Invoke(ownerIndex);
             Destroy(gameObject);
         }
-        
+
+        //alternate renderer and reset flash timer
         if (flashTimer >= flashLen)
         {
             thisRenderer.enabled = !thisRenderer.enabled;
             flashTimer = 0f;
-        }        
+        }
     }
 
     /// <summary>
@@ -96,7 +93,7 @@ public class GamePiece : MonoBehaviour
     /// </summary>
     public void Pickup()
     {
-        held = true;
+        Held = true;
         gameObject.layer = LayerMask.NameToLayer("Outline");
     }
 
@@ -106,15 +103,14 @@ public class GamePiece : MonoBehaviour
     /// </summary>
     public void Drop()
     {
-        held = false;
+        Held = false;
         gameObject.layer = LayerMask.NameToLayer("Default");
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        
         //limited checks while piece is held
-        if (held)
+        if (Held)
         {
             return;
         }
@@ -139,6 +135,9 @@ public class GamePiece : MonoBehaviour
         //collision with another piece
         if (otherTag == "GamePiece")
         {
+            //don't do anything if other piece isn't part of a stack
+            if (!collision.gameObject.GetComponent<GamePiece>().Stacked) return;
+
             int owner = collision.gameObject.GetComponent<GamePiece>().OwnerIndex;
             AddToStack(owner);
             return;
@@ -158,7 +157,13 @@ public class GamePiece : MonoBehaviour
             return;
         }
 
-        ownerIndex = owner;
+        OwnerIndex = owner;
+
+        //play a sound
+        TouchSound();
+
+        //flag this piece as stacked
+        Stacked = true;
     }
 
     /// <summary>
@@ -167,6 +172,30 @@ public class GamePiece : MonoBehaviour
     private void GroundPiece()
     {
         destroy = true;
+        FallSound();
     }
 
+    /// <summary>
+    /// Play an audio clip of the piece hittng the table
+    /// </summary>
+    private void FallSound()
+    {  
+        //get a random falling clip
+        source.clip = AudioController.GetFallClip();
+
+        //play it
+        source.Play();
+    }
+
+    /// <summary>
+    /// Play an audio clip of the piece hitting another piece
+    /// </summary>
+    private void TouchSound()
+    {
+        //get a random touching clip
+        source.clip = AudioController.GetTouchClip();
+
+        //play it
+        source.Play();
+    }
 }

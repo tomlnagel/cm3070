@@ -14,7 +14,7 @@ public class Player : ScriptableObject
     public Vector3 PlayerHome { get; set; }
     public Quaternion PlayerRotation { get; set; }
     public Color PlayerColor { get; set; }
-    public float StackHeight { get; set; }
+    public float Score { get; set; }
     public Vector2 CardPosition { get; set; }
     public int Lives { get; set; }
 
@@ -32,17 +32,16 @@ public class Player : ScriptableObject
     public void CreateBase()
     {
         //create the base at given position and rotation
-        playerArea = Instantiate(Resources.Load("Prefabs/playerArea"), PlayerHome, PlayerRotation) as GameObject; 
+        playerArea = Instantiate(Resources.Load<GameObject>("Prefabs/playerArea"), PlayerHome, PlayerRotation); 
 
         //set the owner
         playerArea.transform.Find("base").GetComponent<PlayerBase>().OwnerIndex = PlayerNum;
 
         //set player name
-        playerArea.transform.Find("playerName").GetComponent<TextMesh>().text = PlayerName;
+        playerArea.transform.Find("playerName").GetComponent<TMP_Text>().text = PlayerName;
 
         //set the color
-        //playerArea.transform.GetChild(0).GetComponent<Renderer>().material.color = playerColor;
-        playerArea.transform.Find("playerName").GetComponent<TextMesh>().color = PlayerColor;
+        playerArea.transform.Find("playerName").GetComponent<TMP_Text>().color = PlayerColor;
     }
 
     /// <summary>
@@ -52,7 +51,7 @@ public class Player : ScriptableObject
     public void CreateCard()
     {
         //instantiate the prefab
-        playerCard = Instantiate(Resources.Load("Prefabs/playerCard"), GameObject.Find("gameUI").transform) as GameObject;
+        playerCard = Instantiate(Resources.Load<GameObject>("Prefabs/playerCard"), GameObject.Find("gameUI").transform);
 
         //set the position
         playerCard.GetComponent<RectTransform>().anchoredPosition = CardPosition;
@@ -63,31 +62,31 @@ public class Player : ScriptableObject
         //set player name
         playerCard.transform.Find("playerName").GetComponent<TMP_Text>().text = PlayerName;
 
-        UpdateScore(0f);
-        UpdateLives(0);
+        UpdateScore(0f); //set score to 0
+        UpdateLives(); //display starting lives
     }
 
     /// <summary>
     /// Update stored score and set text on scorecard
     /// </summary>
     /// <param name="score">The player's current score</param>
-    public void UpdateScore(float score)
+    public void UpdateScore(float stackHeight)
     {
-        StackHeight = score;
+        //10 times stack height
+        Score = stackHeight * 10;
 
-        //display as x10 bigger to 0dp
-        //playerCard.transform.GetChild(2).GetComponent<Text>().text = (stackHeight * 10).ToString("0");
-        playerCard.transform.Find("playerScoreValue").GetComponent<TMP_Text>().text = (StackHeight * 10).ToString("0");
+        //penalty for each life lost
+        Score -= (GameSettings.StartingLives - Lives) * GameSettings.LifePenalty;
+
+        //display to 0dp
+        playerCard.transform.Find("playerScoreValue").GetComponent<TMP_Text>().text = Score.ToString("0");
     }
 
     /// <summary>
-    /// Update stored life count and set text on scorecard
+    /// Update displayed life count on scorecard
     /// </summary>
-    /// <param name="delta">The amount to add to the current life count (can be negative)</param>
-    private void UpdateLives(int delta)
-    {
-        Lives += delta; //update life count
-        
+    private void UpdateLives()
+    {        
         //contruct heart string
         string lifeString = "";
         for (int i = 0; i < Lives; i++) lifeString += " ♥ ";
@@ -100,11 +99,12 @@ public class Player : ScriptableObject
     }
 
     /// <summary>
-    /// Decrement the player's life count
+    /// Decrement the player's life count and update display
     /// </summary>
     public void LoseLife()
     {
-        UpdateLives(-1);
+        Lives--;
+        UpdateLives();
     }
 
     /// <summary>
@@ -164,6 +164,6 @@ public class PlayerComparer: IComparer
 {
     public int Compare(object x, object y)
     {
-        return (new CaseInsensitiveComparer()).Compare(((Player)y).StackHeight, ((Player)x).StackHeight);
+        return (new CaseInsensitiveComparer()).Compare(((Player)y).Score, ((Player)x).Score);
     }
 }
