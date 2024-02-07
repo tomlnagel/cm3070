@@ -181,9 +181,11 @@ public class MainMenu : MonoBehaviour
     /// <param name="player">The player geing assinged a new color</param>
     public void PickColor(int player)
     {
-        colorPickPlayer = player; //record which player we're picking for
+        //record which player we're picking for
+        colorPickPlayer = player; 
 
-        transform.parent.Find("ColorPicker").gameObject.SetActive(true); //enable the picker
+        //enable the picker
+        transform.parent.Find("ColorPicker").gameObject.SetActive(true); 
     }
 
     /// <summary>
@@ -202,9 +204,9 @@ public class MainMenu : MonoBehaviour
         if (colorPickPlayer == 4) GameSettings.Player4_color = chosenColor;
 
         //disable picker
-        transform.parent.Find("ColorPicker").gameObject.SetActive(false); //enable the picker
+        transform.parent.Find("ColorPicker").gameObject.SetActive(false);
 
-        //update display
+        //update displayed colour for all players
         UpdatePlayerColors();
     }
 
