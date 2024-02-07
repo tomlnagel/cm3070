@@ -1,0 +1,35 @@
+Were you able to run the game programme?
+	Y/N
+
+How easy was it to understand the object of the game?
+	Not easy - Easy
+
+How easy was it to move the camera position in the game world?
+	Not easy - Easy
+
+How easy was it to place the game pieces where you intended?
+	Not easy - Easy
+
+How understandable was the scoring system?
+	Obtuse - Clear
+
+How challenging was the gameplay?
+	Too hard - too simple
+
+How fun did you find the game?
+	Boring - fun
+
+How long did you play for?
+	Less than 2 mins - More than 20 mins
+
+How often do you play video games?
+	Never - Daily
+
+How often do you play tabletop board games?
+	Never - daily
+
+What did you find most furstating about the game?
+	Free text
+
+What was your favourite thing about the game?
+	Free text
