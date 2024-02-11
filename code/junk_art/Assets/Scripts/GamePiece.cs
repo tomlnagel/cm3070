@@ -138,7 +138,9 @@ public class GamePiece : MonoBehaviour
             //don't do anything if other piece isn't part of a stack
             if (!collision.gameObject.GetComponent<GamePiece>().Stacked) return;
 
+            //get the owner of the collided piece
             int owner = collision.gameObject.GetComponent<GamePiece>().OwnerIndex;
+
             AddToStack(owner);
             return;
         }
