@@ -24,6 +24,7 @@ public class GameController : MonoBehaviour
 
     private bool gamePaused; //is the game paused?
     private bool gameOver; //is the game finished?
+    private GameObject gameOverText; //UI text
 
     //events
     public delegate void GameEnded();
@@ -51,6 +52,10 @@ public class GameController : MonoBehaviour
         deck.InitDeck(playerCount); //populate and shuffle the deck
 
         CreatePlayers();
+
+        //ensure game over tet is hidden
+        gameOverText = GameObject.Find("gameUI/gameOverText");
+        gameOverText.SetActive(false);
 
         //start the game
         gameOver = false;
@@ -353,10 +358,13 @@ public class GameController : MonoBehaviour
         //broadcast event to disable game controls
         onGameEnded?.Invoke();
 
+        //display 'Game Over'
+        gameOverText.SetActive(true);
+
         //disable 'next player' button
         GameObject.Find("gameUI/nextPlayerButton").SetActive(false);
 
-        //sort the players in ascending score
+        //sort the players in descending score
         Array.Sort(playerArray, new PlayerComparer());
         
         //rearrange scorecards
@@ -366,6 +374,8 @@ public class GameController : MonoBehaviour
             int placing = i + 1;
             playerArray[i].GameEndScorecard(scorecardPos, placing); //update the scorecard
         }
+
+        
     }
 
     /// <summary>
