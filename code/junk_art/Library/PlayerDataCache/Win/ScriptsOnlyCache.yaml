@@ -1428,4 +1428,4 @@ ScriptsOnlyBuild:
   scenePathNames:
   - Assets/Scenes/main_menu.unity
   - Assets/Scenes/game_table.unity
-  playerPath: D:/cm3070/builds/beta_0.6/junk_art.exe
+  playerPath: D:/cm3070/builds/release/junk_art.exe

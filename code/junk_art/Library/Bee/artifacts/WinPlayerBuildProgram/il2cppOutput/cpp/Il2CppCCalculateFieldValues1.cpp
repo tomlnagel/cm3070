@@ -17577,6 +17577,8 @@ struct GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09  : public MonoBe
 	bool ___gamePaused_13;
 	// System.Boolean GameController::gameOver
 	bool ___gameOver_14;
+	// UnityEngine.GameObject GameController::gameOverText
+	GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* ___gameOverText_15;
 };
 
 // GamePiece
@@ -25320,7 +25322,7 @@ struct FreeCamera_t2904FFED3AE2A0BFC5BB3A978B57A3A5A4DD1571_StaticFields
 struct GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09_StaticFields
 {
 	// GameController/GameEnded GameController::onGameEnded
-	GameEnded_t371FA2580ADFAC90DF6B355C4239E56AFF3EB107* ___onGameEnded_15;
+	GameEnded_t371FA2580ADFAC90DF6B355C4239E56AFF3EB107* ___onGameEnded_16;
 };
 
 // GameController
@@ -28941,9 +28943,9 @@ IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable4432[6] =
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable4433[8] = 
 {
 	static_cast<int32_t>(offsetof(CameraController_tDC4FF0FA10418272A26E5E7539156F4F4A98E8C5, ___TargetCameraState_4)),static_cast<int32_t>(offsetof(CameraController_tDC4FF0FA10418272A26E5E7539156F4F4A98E8C5, ___LerpingCameraUpdater_5)),static_cast<int32_t>(offsetof(CameraController_tDC4FF0FA10418272A26E5E7539156F4F4A98E8C5, ___boost_6)),static_cast<int32_t>(offsetof(CameraController_tDC4FF0FA10418272A26E5E7539156F4F4A98E8C5, ___positionLerpTime_7)),static_cast<int32_t>(offsetof(CameraController_tDC4FF0FA10418272A26E5E7539156F4F4A98E8C5, ___mouseSensitivityCurve_8)),static_cast<int32_t>(offsetof(CameraController_tDC4FF0FA10418272A26E5E7539156F4F4A98E8C5, ___rotationLerpTime_9)),static_cast<int32_t>(offsetof(CameraController_tDC4FF0FA10418272A26E5E7539156F4F4A98E8C5, ___invertY_10)),static_cast<int32_t>(offsetof(CameraController_tDC4FF0FA10418272A26E5E7539156F4F4A98E8C5, ___controlsEnabled_11)),};
-IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable4435[12] = 
+IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable4435[13] = 
 {
-	static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___activePlayer_4)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___gameUI_5)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___pauseMenu_6)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___playerCount_7)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___radius_8)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___playerArray_9)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___deck_10)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___playerNames_11)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___playerColors_12)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___gamePaused_13)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___gameOver_14)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09_StaticFields, ___onGameEnded_15)),};
+	static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___activePlayer_4)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___gameUI_5)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___pauseMenu_6)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___playerCount_7)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___radius_8)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___playerArray_9)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___deck_10)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___playerNames_11)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___playerColors_12)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___gamePaused_13)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___gameOver_14)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09, ___gameOverText_15)),static_cast<int32_t>(offsetof(GameController_tDA619EE453F7ED2C8297EF928518A0B447E44D09_StaticFields, ___onGameEnded_16)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable4437[12] = 
 {
 	static_cast<int32_t>(offsetof(GamePiece_tE572D6E16F40569B108D0EDD6219BEF6C0D21FBB, ___U3CHeldU3Ek__BackingField_4)),static_cast<int32_t>(offsetof(GamePiece_tE572D6E16F40569B108D0EDD6219BEF6C0D21FBB, ___U3COwnerIndexU3Ek__BackingField_5)),static_cast<int32_t>(offsetof(GamePiece_tE572D6E16F40569B108D0EDD6219BEF6C0D21FBB, ___U3CStackedU3Ek__BackingField_6)),static_cast<int32_t>(offsetof(GamePiece_tE572D6E16F40569B108D0EDD6219BEF6C0D21FBB, ___U3CBaseMatU3Ek__BackingField_7)),static_cast<int32_t>(offsetof(GamePiece_tE572D6E16F40569B108D0EDD6219BEF6C0D21FBB, ___thisRenderer_8)),static_cast<int32_t>(offsetof(GamePiece_tE572D6E16F40569B108D0EDD6219BEF6C0D21FBB, ___destroy_9)),static_cast<int32_t>(offsetof(GamePiece_tE572D6E16F40569B108D0EDD6219BEF6C0D21FBB, ___detroyLen_10)),static_cast<int32_t>(offsetof(GamePiece_tE572D6E16F40569B108D0EDD6219BEF6C0D21FBB, ___flashLen_11)),static_cast<int32_t>(offsetof(GamePiece_tE572D6E16F40569B108D0EDD6219BEF6C0D21FBB, ___destroyTimer_12)),static_cast<int32_t>(offsetof(GamePiece_tE572D6E16F40569B108D0EDD6219BEF6C0D21FBB, ___flashTimer_13)),static_cast<int32_t>(offsetof(GamePiece_tE572D6E16F40569B108D0EDD6219BEF6C0D21FBB, ___source_14)),static_cast<int32_t>(offsetof(GamePiece_tE572D6E16F40569B108D0EDD6219BEF6C0D21FBB_StaticFields, ___onDestruction_15)),};
