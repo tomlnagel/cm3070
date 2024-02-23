@@ -51,4 +51,5 @@ To print:
 * Key reference summaries
 * Video transcript
 * Scripts
+* Login credentials
 
