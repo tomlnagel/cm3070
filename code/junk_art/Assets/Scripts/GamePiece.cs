@@ -14,7 +14,7 @@ public class GamePiece : MonoBehaviour
     public int OwnerIndex { get; set; } = -1; //default no owner
     public bool Stacked { get; set; } = false; //default unstacked
 
-    //Materials
+    //materials
     public Material BaseMat { get; set; } //default material for this piece
     private MeshRenderer thisRenderer; //the object's renderer
 
@@ -59,7 +59,7 @@ public class GamePiece : MonoBehaviour
     /// <summary>
     /// Called once per update loop
     /// Flash this object while awating destruction by dis/enabling renderer
-    /// At end of destruction time destroy this object
+    /// At end of destruction timer destroy this object
     /// </summary>
     private void FlashAndDestroy()
     {

@@ -27,7 +27,7 @@ public class Player : ScriptableObject
 
     /// <summary>
     /// Create GameObject from Prefab for this player's base
-    /// Set apropriate position, rotation, colour, name text
+    /// Set position, rotation, colour, name text
     /// </summary>
     public void CreateBase()
     {
@@ -63,7 +63,7 @@ public class Player : ScriptableObject
         playerCard.transform.Find("playerName").GetComponent<TMP_Text>().text = PlayerName;
 
         UpdateScore(0f); //set score to 0
-        UpdateLives(); //display starting lives
+        UpdateLives();   //display starting lives
     }
 
     /// <summary>
@@ -127,7 +127,7 @@ public class Player : ScriptableObject
     /// Rearrange scorecards at game end
     /// </summary>
     /// <param name="newCardPosition">The new position for the card</param>
-    /// <param name="winner">Is this player the winner?</param>
+    /// <param name="placing">This player's final position</param>
     public void GameEndScorecard(Vector2 newCardPosition, int placing)
     {
         //set new anchor and position

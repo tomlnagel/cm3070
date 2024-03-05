@@ -140,7 +140,7 @@ public class MainMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Set interction state and background color of a text input field
+    /// Set interaction state and background color of a text input field
     /// </summary>
     /// <param name="field">The TMP Input field to change</param>
     /// <param name="isEnabled">The enabled state of the field</param>
@@ -154,7 +154,7 @@ public class MainMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Set interction state and color alpha of a color picker button
+    /// Set interaction state and color alpha of a color picker button
     /// </summary>
     /// <param name="picker">The transform of the color picker button</param>
     /// <param name="isEnabled">The enabled state of the button</param>
@@ -178,7 +178,7 @@ public class MainMenu : MonoBehaviour
     /// <summary>
     /// Activate the color picker for the chosen player
     /// </summary>
-    /// <param name="player">The player geing assinged a new color</param>
+    /// <param name="player">The player being assigned a new color</param>
     public void PickColor(int player)
     {
         //record which player we're picking for

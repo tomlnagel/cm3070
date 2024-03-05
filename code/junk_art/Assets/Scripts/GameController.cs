@@ -14,16 +14,16 @@ public class GameController : MonoBehaviour
     [SerializeField] private Canvas gameUI;
     [SerializeField] private Canvas pauseMenu;
 
-    private int playerCount; //number of players
-    private float radius = 13f; //radius of the game space
-    private Player[] playerArray; //declare the player array
-    private GamePieceDeck deck; //deck of game pieces
+    private int playerCount;        //number of players
+    private float radius = 13f;     //radius of the game space
+    private Player[] playerArray;   //declare the player array
+    private GamePieceDeck deck;     //deck of game pieces
 
     string[] playerNames; //array to contain player names
     Color[] playerColors; //array to contain player colors
 
-    private bool gamePaused; //is the game paused?
-    private bool gameOver; //is the game finished?
+    private bool gamePaused;    //is the game paused?
+    private bool gameOver;      //is the game finished?
     private GameObject gameOverText; //UI text
 
     //events
@@ -53,7 +53,7 @@ public class GameController : MonoBehaviour
 
         CreatePlayers();
 
-        //ensure game over tet is hidden
+        //ensure game over text is hidden
         gameOverText = GameObject.Find("gameUI/gameOverText");
         gameOverText.SetActive(false);
 
@@ -65,7 +65,7 @@ public class GameController : MonoBehaviour
 
     private void Update()
     {
-        //open/close menu on Esc
+        //open or close menu on Esc
         if (Input.GetKey(KeyCode.Escape))
         {
             if (gamePaused) ClosePauseMenu();
@@ -100,7 +100,6 @@ public class GameController : MonoBehaviour
         {
             if (playerNames[i] == "") playerNames[i] = "Player " + (i + 1);
         }
-
     }
 
     /// <summary>
@@ -108,18 +107,18 @@ public class GameController : MonoBehaviour
     /// </summary>
     private void CreatePlayers()
     {
-        //intiialise the array
+        //initialise the array
         playerArray = new Player[playerCount];
 
         //populate the array
         for (int i = 0; i < playerCount; i++)
         {
-            Player newPlayer = ScriptableObject.CreateInstance<Player>(); //instantiate player
-            newPlayer.PlayerNum = i; //set the pleyer number
-            newPlayer.PlayerHome = PlayerHomePos(playerCount, i); //set base position
-            newPlayer.PlayerRotation = PlayerHomeRotation(playerCount, i); //set base rotation
+            Player newPlayer = ScriptableObject.CreateInstance<Player>();   //instantiate player
+            newPlayer.PlayerNum = i;                                        //set the pleyer number
+            newPlayer.PlayerHome = PlayerHomePos(playerCount, i);           //set base position
+            newPlayer.PlayerRotation = PlayerHomeRotation(playerCount, i);  //set base rotation
             newPlayer.CardPosition = PlayerCardPosition(playerCount, i, -130f); //set the scorecard position
-            newPlayer.Lives = GameSettings.StartingLives; //set number of lives
+            newPlayer.Lives = GameSettings.StartingLives;                   //set number of lives
 
             //access name array, with fallback in case of out-of-bounds
             try
@@ -168,7 +167,7 @@ public class GameController : MonoBehaviour
     /// </summary>
     /// <param name="pCount">Total number of player in this game</param>
     /// <param name="pNum">This player's number</param>
-    /// <returns>The rotationof the player base</returns>
+    /// <returns>The rotation of the player base</returns>
     private Quaternion PlayerHomeRotation(int pCount, int pNum)
     {
         float angle = 270 - ((360 / pCount) * pNum); //rotate to point to table centre
@@ -180,10 +179,10 @@ public class GameController : MonoBehaviour
     /// <summary>
     /// Calculate player scorecard position by dividing the screen width evenly
     /// </summary>
-    /// <param name="pCount">Total number of player in this game</param>
+    /// <param name="pCount">Total number of players in this game</param>
     /// <param name="pNum">This player's number</param>
-    /// <param name="y">TThe y position of the card</param>
-    /// <returns>The rotationof the player base</returns>
+    /// <param name="y">The y position of the card</param>
+    /// <returns>The position of the player's scorecard on the UI canvas</returns>
     private Vector2 PlayerCardPosition(int pCount, int pNum, float y)
     {
         //canvas width
@@ -211,12 +210,12 @@ public class GameController : MonoBehaviour
     /// </summary>
     public void NextPlayer()
     {
-        StackHeights(); //recalculate stack heights
+        StackHeights();                                                 //recalculate stack heights
         if (activePlayer >= 0) playerArray[activePlayer].SetInactive(); //update scorecard for old player
-        activePlayer = (activePlayer + 1) % playerCount; //advance player
-        AlignCameraForPlayer(activePlayer); //realign camera
-        playerArray[activePlayer].SetActive(); //update scorecard for new player
-        SpawnGamePiece(); //give the new player a piece to add
+        activePlayer = (activePlayer + 1) % playerCount;                //advance player
+        AlignCameraForPlayer(activePlayer);                             //realign camera
+        playerArray[activePlayer].SetActive();                          //update scorecard for new player
+        SpawnGamePiece();                                               //give the new player a piece to add
     }
 
     /// <summary>
@@ -254,7 +253,7 @@ public class GameController : MonoBehaviour
             return;
         }
 
-        //name ond color of next peie in deck
+        //name and color of next piece in deck
         string[] newPieceDef = deck.NextPiece();
 
         //spawn a new piece at the hold point
@@ -329,7 +328,7 @@ public class GameController : MonoBehaviour
     }
 
     /// <summary>
-    /// Decrease a player's lofe count, triggered when a piece is destroyed
+    /// Decrease a player's life count, triggered when a piece is destroyed
     /// </summary>
     /// <param name="playerIndex">The owner of the destroyed piece, to lose a life</param>
     private void LifeLost(int playerIndex)
@@ -373,9 +372,7 @@ public class GameController : MonoBehaviour
             Vector2 scorecardPos = PlayerCardPosition(playerCount, i, 0f); //position for the scorecard
             int placing = i + 1;
             playerArray[i].GameEndScorecard(scorecardPos, placing); //update the scorecard
-        }
-
-        
+        }        
     }
 
     /// <summary>
@@ -415,8 +412,8 @@ public class GameController : MonoBehaviour
     /// </summary>
     public void MainMenu()
     {
-        GameSettings.Reset(); //reset game settings to default
-        SceneManager.LoadScene(0); //load the main menu
+        GameSettings.Reset();       //reset game settings to default
+        SceneManager.LoadScene(0);  //load the main menu
     }
 
     /// <summary>

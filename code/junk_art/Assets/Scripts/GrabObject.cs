@@ -14,17 +14,17 @@ using UnityEngine;
 public class GrabObject : MonoBehaviour
 {
     [Header("Grab settings")]    
-    [SerializeField] private Camera playerCamera; //current player's camera
-    [SerializeField] private Transform grabFocus; //grab focus point
-    [SerializeField] private Transform holdFocus; //hold focus point
-    [SerializeField] private float grabForce = 2f; //force to pull object to grab focus
-    [SerializeField] private float scrollSpeed = 0.5f; //speed to move while srolling
-    [SerializeField] private float maxScroll = 10f; //maximum Z offset from grab point
+    [SerializeField] private Camera playerCamera;       //current player's camera
+    [SerializeField] private Transform grabFocus;       //grab focus point
+    [SerializeField] private Transform holdFocus;       //hold focus point
+    [SerializeField] private float grabForce = 2f;      //force to pull object to grab focus
+    [SerializeField] private float scrollSpeed = 0.5f;  //speed to move while srolling
+    [SerializeField] private float maxScroll = 10f;     //maximum Z offset from grab point
 
-    private float scrollDistance = 0f; //current Z offset from grab point
-    private GameObject heldObject; //currently held object
-    private Rigidbody heldObjectRB; //RB of held object
-    private bool rotating = false; //is the held object being rotated?
+    private float scrollDistance = 0f;  //current Z offset from grab point
+    private GameObject heldObject;      //currently held object
+    private Rigidbody heldObjectRB;     //RB of held object
+    private bool rotating = false;      //is the held object being rotated?
 
     private bool controlsEnabled = true; //can we pickup/drop objects?
 

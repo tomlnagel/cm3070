@@ -61,5 +61,4 @@ public static class GameSettings
         Player3_color = new Color(0.02f, 0.35f, 0.02f);
         Player4_color = new Color(0.6f, 0.02f, 0.6f);
     }
-
 }

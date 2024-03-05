@@ -22,6 +22,7 @@ public class CameraController : MonoBehaviour
 
        /// <summary>
        /// Set the target state to match a given transform
+       /// Used for intialisation
        /// </summary>
        /// <param name="t">The transform to copy</param>
         public void SetFromTransform(Transform t)
@@ -35,7 +36,7 @@ public class CameraController : MonoBehaviour
         }
 
         /// <summary>
-        /// Translate the target state position according to given vector
+        /// Translate and rotate the target position according to given vector
         /// </summary>
         /// <param name="translation">The vector to apply</param>
         public void Translate(Vector3 translation)
@@ -52,6 +53,7 @@ public class CameraController : MonoBehaviour
 
     /// <summary>
     /// Update camera's position towards target position and rotation
+    /// Use interpolation to achieve smooth movement each timeframe
     /// </summary>
     class CameraUpdater
     {
@@ -66,6 +68,7 @@ public class CameraController : MonoBehaviour
 
         /// <summary>
         /// Set the camera state to match a given transform
+        /// Used for intialisation
         /// </summary>
         /// <param name="t">The transform to copy</param>
         public void SetFromTransform(Transform t)
@@ -79,7 +82,7 @@ public class CameraController : MonoBehaviour
         }
 
         /// <summary>
-        /// Update camera state to a percentage towards a target state
+        /// Update camera target state to a percentage towards a target state
         /// </summary>
         /// <param name="target">The state to approach</param>
         /// <param name="positionLerpPct">How far to approach target position</param>
@@ -96,7 +99,7 @@ public class CameraController : MonoBehaviour
         }
 
         /// <summary>
-        /// Apply the calcualted  position to a given transform
+        /// Apply the calcualted position to a given camera's transform component
         /// </summary>
         /// <param name="camera">The camera transform to move</param>
         public void UpdateTransform(Transform camera)
